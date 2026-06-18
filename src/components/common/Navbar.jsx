@@ -9,12 +9,15 @@ import Logo from "../ui/Logo";
 import Container from "../shared/Container";
 import { ThemeSwitch } from "../shared/ThemeSwitch";
 import BaseButton from "../ui/BaseButton";
+import { authClient } from "@/lib/auth-client";
 
 const Navbar = () => {
     const [open, setOpen] = useState(false);
     // Initialize with your home path so a link is styled active immediately on load
     const [activeSection, setActiveSection] = useState("/");
     const links = navLinks;
+    const {data: session, error} = authClient.useSession();
+    console.log(session?.user);
 
     const handleMenu = () => {
         setOpen(!open);
