@@ -1,26 +1,71 @@
 @import "tailwindcss";
+@import "@heroui/styles";
+
+/* -------------------------------------------------------------------------- */
+/* LIGHT THEME                                                                */
+/* -------------------------------------------------------------------------- */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FAF8F3;
+  --surface: #F5F1EA;
+  --card: #FFFFFF;
+
+  --foreground: #1B1B1B;
+  --muted: #6B6B6B;
+
+  --primary: #FF6B35;
+  --primary-hover: #F25C2B;
+
+  --secondary: #7C3AED;
+
+  --border: #E8E2D8;
+  --border-hover: #DBCDF0; /* Added light theme hover border color */
+
+  --success: #22C55E;
 }
 
-@theme inline {
+/* -------------------------------------------------------------------------- */
+/* DARK THEME                                                                 */
+/* -------------------------------------------------------------------------- */
+
+.dark {
+  --background: #1E1E1E;
+  --surface: #252526;
+  --card: #2D2D30;
+
+  --foreground: #FFFFFF;
+  --muted: #B3B3B3;
+
+  --primary: #FF9A00;
+  --primary-hover: #FFB340;
+
+  --secondary: #B66DFF;
+
+  --border: #3E3E42;
+  --border-hover: #5A5A62; /* Added dark theme hover border color */
+
+  --success: #34D399;
+}
+
+/* -------------------------------------------------------------------------- */
+/* TAILWIND THEME MAP                                                         */
+/* -------------------------------------------------------------------------- */
+
+@theme {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-muted: var(--muted);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  --color-secondary: var(--secondary);
+
+  --color-border: var(--border);
+  --color-border-hover: var(--border-hover); /* Mapped to Tailwind */
+
+  --color-success: var(--success);
 }
