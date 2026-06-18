@@ -1,9 +1,7 @@
 import Link from "next/link";
 import Container from "../shared/Container";
 import Logo from "../ui/Logo";
-import { IoLogoGithub } from "react-icons/io";
-import { FaDiscord, FaLinkedinIn } from "react-icons/fa";
-import { MdOutlineMarkEmailUnread } from "react-icons/md";
+import { FaDiscord, FaLinkedinIn, FaTwitter, FaYoutube } from "react-icons/fa";
 import { company, explore, support } from "@/lib/navLinks";
 
 
@@ -18,24 +16,31 @@ const Footer = () => {
                             <h3 className="text-muted text-sm">Real stories. Life lessons. Lasting impact.</h3>
                         </div>
                         <div className="flex gap-4 items-center">
-                            <Link href={'/'} className="hover:text-purple-600 transition">
-                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-xs">
-                                    <IoLogoGithub className="text-xl" />
+                            {/* Twitter / X Brand Color */}
+                            <Link href={'/'} className="group transition duration-300">
+                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-xs text-muted group-hover:text-[#1DA1F2] transition-colors duration-300">
+                                    <FaTwitter className="text-xl" />
                                 </div>
                             </Link>
-                            <Link href={'/'} className="hover:text-purple-600 transition">
-                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-xs">
+
+                            {/* LinkedIn Brand Color */}
+                            <Link href={'/'} className="group transition duration-300">
+                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-xs text-muted group-hover:text-[#0077B5] transition-colors duration-300">
                                     <FaLinkedinIn className="text-xl" />
                                 </div>
                             </Link>
-                            <Link href={'/'} className="hover:text-purple-600 transition">
-                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-xs">
+
+                            {/* Discord Brand Color */}
+                            <Link href={'/'} className="group transition duration-300">
+                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-xs text-muted group-hover:text-[#5865F2] transition-colors duration-300">
                                     <FaDiscord className="text-xl" />
                                 </div>
                             </Link>
-                            <Link href={'/'} className="hover:text-purple-600 transition">
-                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-xs">
-                                    <MdOutlineMarkEmailUnread className="text-xl" />
+
+                            {/* YouTube Brand Color */}
+                            <Link href={'/'} className="group transition duration-300">
+                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-xs text-muted group-hover:text-[#FF0000] transition-colors duration-300">
+                                    <FaYoutube className="text-xl" />
                                 </div>
                             </Link>
                         </div>
