@@ -176,7 +176,7 @@ const LoginPage = () => {
         provider: "google",
       });
 
-      // console.log(data);
+      console.log(data);
     } catch (error) {
       const message =
         error instanceof Error

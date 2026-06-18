@@ -4,8 +4,8 @@
 /*                               COMPONENT IMPORTS                            */
 /* -------------------------------------------------------------------------- */
 /*
-  Container   => Reusable layout wrapper for keeping content centered
-  BaseButton  => Custom reusable button component with animation support
+Container   => Reusable layout wrapper for keeping content centered
+BaseButton  => Custom reusable button component with animation support
 */
 import Container from "@/components/shared/Container";
 import BaseButton from "@/components/ui/BaseButton";
@@ -373,7 +373,7 @@ const RegisterPage = () => {
         provider: "google",
       });
 
-      // console.log(data);
+      console.log(data);
     } catch (error) {
       const message =
         error instanceof Error
