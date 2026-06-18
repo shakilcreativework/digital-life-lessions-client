@@ -16,30 +16,26 @@ const Footer = () => {
                             <h3 className="text-muted text-sm">Real stories. Life lessons. Lasting impact.</h3>
                         </div>
                         <div className="flex gap-4 items-center">
-                            {/* Twitter / X Brand Color */}
                             <Link href={'/'} className="group transition duration-300">
-                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-xs text-muted group-hover:text-[#1DA1F2] transition-colors duration-300">
+                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-sm text-muted group-hover:text-[#1DA1F2] transition-colors duration-300">
                                     <FaTwitter className="text-xl" />
                                 </div>
                             </Link>
 
-                            {/* LinkedIn Brand Color */}
                             <Link href={'/'} className="group transition duration-300">
-                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-xs text-muted group-hover:text-[#0077B5] transition-colors duration-300">
+                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-sm text-muted group-hover:text-[#0077B5] transition-colors duration-300">
                                     <FaLinkedinIn className="text-xl" />
                                 </div>
                             </Link>
 
-                            {/* Discord Brand Color */}
                             <Link href={'/'} className="group transition duration-300">
-                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-xs text-muted group-hover:text-[#5865F2] transition-colors duration-300">
+                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-sm text-muted group-hover:text-[#5865F2] transition-colors duration-300">
                                     <FaDiscord className="text-xl" />
                                 </div>
                             </Link>
 
-                            {/* YouTube Brand Color */}
                             <Link href={'/'} className="group transition duration-300">
-                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-xs text-muted group-hover:text-[#FF0000] transition-colors duration-300">
+                                <div className="w-8 h-8 bg-background rounded-md flex justify-center items-center shadow-sm text-muted group-hover:text-[#FF0000] transition-colors duration-300">
                                     <FaYoutube className="text-xl" />
                                 </div>
                             </Link>
