@@ -26,64 +26,67 @@ import Image from "next/image";
 const HeroSlider = () => {
     // Configured content using your theme variables safely
     const sliderData = [
-        {
-            id: 1,
-            badge: "✨ A community that inspires growth",
-            heading: (
-                <>
-                    Real stories. <br /> Life lessons. <br />{" "}
-                    <span className="bg-[#facc15] dark:bg-amber-500 text-[#1b1b1b] px-2 inline-block rounded-md">
-                        Lasting impact.
-                    </span>
-                </>
-            ),
-            description:
-                "Digital Life Lessons is a community where people share real experiences, personal growth stories, and the lessons that changed everything.",
-            primaryBtn: "Explore Lessons",
-            secondaryBtn: "Join the Community",
-            ImageSrc: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe",
-            membersCount: "50K+",
-            membersLabel: "Members growing together",
-        },
-        {
-            id: 2,
-            badge: "🌱 Shared wisdom, better choices",
-            heading: (
-                <>
-                    Every mistake <br /> is a guide <br />{" "}
-                    <span className="bg-secondary text-white px-2 inline-block rounded-md">
-                        For tomorrow.
-                    </span>
-                </>
-            ),
-            description:
-                "Skip the trial and error. Read honest reflections written by everyday individuals navigating career transitions, mental health, and relationships.",
-            primaryBtn: "Read Reflections",
-            secondaryBtn: "Write Your Story",
-            ImageSrc: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4",
-            membersCount: "120+",
-            membersLabel: "Daily stories submitted",
-        },
-        {
-            id: 3,
-            badge: "🤝 You are not alone on this journey",
-            heading: (
-                <>
-                    Connect through <br /> vulnerable and <br />{" "}
-                    <span className="bg-primary text-white px-2 inline-block rounded-md">
-                        True moments.
-                    </span>
-                </>
-            ),
-            description:
-                "Find comfort in shared paths. Engage in meaningful perspectives that remind us that every breakdown is a pathway to a massive breakthrough.",
-            primaryBtn: "Discover Voices",
-            secondaryBtn: "Explore Spaces",
-            ImageSrc: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119",
-            membersCount: "4.9/5",
-            membersLabel: "Community trust rating",
-        },
-    ];
+  {
+    id: 1,
+    badge: "✨ A community that inspires growth",
+    heading: (
+      <>
+        Real stories. <br /> Life lessons. <br />{" "}
+        <span className="bg-[#facc15] dark:bg-amber-500 text-[#1b1b1b] px-2 inline-block rounded-md">
+          Lasting impact.
+        </span>
+      </>
+    ),
+    description:
+      "Digital Life Lessons is a community where people share real experiences, personal growth stories, and the lessons that changed everything.",
+    primaryBtn: "Explore Lessons",
+    secondaryBtn: "Join the Community",
+    // VISUAL MEANING: An open journal/book with growing elements, perfectly matching "Real stories & life lessons".
+    ImageSrc: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=1200&q=80",
+    membersCount: "50K+",
+    membersLabel: "Members growing together",
+  },
+  {
+    id: 2,
+    badge: "🌱 Shared wisdom, better choices",
+    heading: (
+      <>
+        Every mistake <br /> is a guide <br />{" "}
+        <span className="bg-secondary text-white px-2 inline-block rounded-md">
+          For tomorrow.
+        </span>
+      </>
+    ),
+    description:
+      "Skip the trial and error. Read honest reflections written by everyday individuals navigating career transitions, mental health, and relationships.",
+    primaryBtn: "Read Reflections",
+    secondaryBtn: "Write Your Story",
+    // VISUAL MEANING: A clean, conceptual maze or crossroads graphic, symbolizing navigating "mistakes, career transitions, and life choices".
+    ImageSrc: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1200&q=80",
+    membersCount: "120+",
+    membersLabel: "Daily stories submitted",
+  },
+  {
+    id: 3,
+    badge: "🤝 You are not alone on this journey",
+    heading: (
+      <>
+        Connect through <br /> vulnerable and <br />{" "}
+        <span className="bg-primary text-white px-2 inline-block rounded-md">
+          True moments.
+        </span>
+      </>
+    ),
+    description:
+      "Find comfort in shared paths. Engage in meaningful perspectives that remind us that every breakdown is a pathway to a massive breakthrough.",
+    primaryBtn: "Discover Voices",
+    secondaryBtn: "Explore Spaces",
+    // VISUAL MEANING: Interlocking hands/community geometric mural design, perfectly matching "You are not alone on this journey".
+    ImageSrc: "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=1200&q=80",
+    membersCount: "4.9/5",
+    membersLabel: "Community trust rating",
+  },
+];
 
     return (
         <section className="relative w-full bg-background transition-colors duration-300 py-10 md:py-14">
