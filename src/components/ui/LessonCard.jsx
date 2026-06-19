@@ -65,13 +65,13 @@ const LessonCard = ({
           <div className="flex items-center gap-4">
             
             {/* Likes */}
-            <button className="flex items-center gap-1.5 hover:text-primary transition-colors">
+            <button className="flex items-center gap-1.5 hover:text-danger transition-colors">
               <AiOutlineHeart className="w-4 h-4" />
               <span>{likes}</span>
             </button>
 
             {/* Comments */}
-            <button className="flex items-center gap-1.5 hover:text-primary transition-colors">
+            <button className="flex items-center gap-1.5 hover:text-success transition-colors">
               <BiCommentDetail className="w-4 h-4" />
               <span>{comments}</span>
             </button>
