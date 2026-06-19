@@ -14,7 +14,7 @@ const LessonCard = ({
   ImageSrc, 
   likes, 
   comments,
-  badgeColorClass = "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30"
+  badgeColorClass = "text-muted font-medium bg-background py-1"
 }) => {
   return (
     <div className="bg-card border border-border hover:border-border-hover rounded-2xl p-4 flex flex-col justify-between h-100 shadow-sm transition-all duration-300 group hover:-translate-y-1">
@@ -33,18 +33,18 @@ const LessonCard = ({
         </div>
 
         {/* Dynamic Category Tag */}
-        <span className={`inline-block text-xs font-bold px-2.5 py-1 rounded-md mb-3 tracking-wide ${badgeColorClass}`}>
+        <span className={`inline-block text-xs px-2.5 py-0.5 shadow-xs border border-border rounded-full mb-3 tracking-wide ${badgeColorClass}`}>
           {category}
         </span>
 
         {/* Title */}
-        <h3 className="text-lg font-bold text-foreground line-clamp-2 leading-snug tracking-tight group-hover:text-primary transition-colors">
+        <h3 className="text-base font-medium text-foreground line-clamp-1 leading-snug tracking-tight group-hover:text-muted transition-colors">
           {title}
         </h3>
       </div>
 
       {/* Footer Area: Author and Performance Metrics */}
-      <div className="space-y-4 pt-4 border-t border-border/60">
+      <div className="space-y-4 pt-4">
         
         {/* Author Avatar Group */}
         <div className="flex items-center gap-2">

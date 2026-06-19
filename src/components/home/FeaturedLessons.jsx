@@ -101,7 +101,7 @@ const FeaturedLessons = () => {
     ];
 
     return (
-        <section className="bg-background py-16 px-6 md:px-12 w-full transition-colors duration-300 overflow-hidden">
+        <section className="bg-background py-16 px-6 md:px-12 w-full transition-colors duration-300">
             {/* 1. Added explicit horizontal padding (px-8) here to provide inner space for absolute navigation items */}
             {/* <div className="max-w-7xl mx-auto relative px-8"> */}
             <div className="relative px-6">
@@ -112,7 +112,7 @@ const FeaturedLessons = () => {
                         Featured Lessons
                     </h2>
 
-                    <button className="text-sm font-bold text-foreground underline underline-offset-4 decoration-2 hover:text-primary transition-all">
+                    <button className="text-sm font-medium text-muted underline underline-offset-4 decoration-2 hover:text-foreground transition-all">
                         View all lessons &rarr;
                     </button>
                 </div>
