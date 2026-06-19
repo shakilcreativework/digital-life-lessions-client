@@ -11,14 +11,20 @@ import { ThemeSwitch } from "../shared/ThemeSwitch";
 import BaseButton from "../ui/BaseButton";
 import { authClient } from "@/lib/auth-client";
 import { CustomTrigger } from "../ui/CustomTrigger";
+import { MdWorkspacePremium } from "react-icons/md";
+import { div } from "framer-motion/client";
 
 const Navbar = () => {
     const [open, setOpen] = useState(false);
-    // Initialize with your home path so a link is styled active immediately on load
     const [activeSection, setActiveSection] = useState("/");
-    const links = navLinks;
     const { data: session, error } = authClient.useSession();
     console.log(session?.user);
+
+    // if user active and get from session then show public and private route
+    const visibleLinks = navLinks.filter(nav => {
+        if (session?.user) return true; // Show everything if logged in
+        return nav.viewType === "public"; // Show only public if logged out
+    });
 
     const handleMenu = () => {
         setOpen(!open);
@@ -27,7 +33,7 @@ const Navbar = () => {
     // 1. Setup Intersection Observer to monitor matching layout nodes
     useEffect(() => {
         // Find HTML target element blocks by cleansing path patterns
-        const sections = links
+        const sections = visibleLinks
             .map((link) => {
                 // Handles both hash formats ("#about") and page paths ("/about")
                 const cleanId = link.path.replace(/^\/#|^\/|^#/, "");
@@ -47,7 +53,7 @@ const Navbar = () => {
                     const targetId = entry.target.id;
 
                     // Match the precise path array item that corresponds to the visible section ID
-                    const matchedLink = links.find((link) => {
+                    const matchedLink = visibleLinks.find((link) => {
                         const cleanPath = link.path.replace(/^\/#|^\/|^#/, "");
                         return cleanPath === targetId;
                     });
@@ -74,7 +80,7 @@ const Navbar = () => {
             sections.forEach((section) => observer.unobserve(section));
             window.removeEventListener("scroll", handleScrollReset);
         };
-    }, [links]);
+    }, [visibleLinks]);
 
     // 2. Click handler to handle clean, smooth window scrolling transitions
     const handleScroll = (e, path) => {
@@ -108,7 +114,7 @@ const Navbar = () => {
 
                         {/* Desktop Navigation Links */}
                         <ul className="hidden lg:flex lg:gap-8 items-center">
-                            {links.map((nav) => {
+                            {visibleLinks.map((nav) => {
                                 const isActive = activeSection === nav.path;
                                 return (
                                     <li key={nav.name}>
@@ -131,15 +137,19 @@ const Navbar = () => {
                             })}
                         </ul>
 
-                        <div className="flex gap-4 md:gap-5 items-center">
-                            <div className="flex items-center md:gap-3 lg:gap-5">
-                                <ThemeSwitch />
-                            </div>
+                        <div className="flex md:gap-5 items-center">
+                            <ThemeSwitch />
 
                             {
                                 session?.user
                                     ?
-                                    <div>
+                                    <div className="md:gap-4 hidden md:inline-flex">
+                                        <BaseButton
+                                            className={'py-2'}
+                                            animated
+                                            animatedSpanOne={'animate-spin'}
+                                            rightIcon={<MdWorkspacePremium />}
+                                            text={'Upgrade'} />
                                         <div className="flex items-center gap-2">
                                             <CustomTrigger />
                                         </div>
@@ -180,7 +190,7 @@ const Navbar = () => {
                         }`}>
                         <div className="overflow-hidden">
                             <ul className="space-y-3 flex flex-col pt-2 border-muted/10">
-                                {links.map((nav) => {
+                                {visibleLinks.map((nav) => {
                                     const isActive = activeSection === nav.path;
                                     return (
                                         <li key={nav.name}>
@@ -197,13 +207,31 @@ const Navbar = () => {
                                         </li>
                                     );
                                 })}
-                                <div className="flex gap-3 pt-2">
-                                    <Link href={'/login'}>
-                                        <BaseButton animated className={'md:hidden inline-flex py-2'} text={'Login'} rightIcon={<IoLogInSharp className="text-2xl" />} />
-                                    </Link>
-                                    <Link href={'/register'}>
-                                        <BaseButton animated animatedSpanOne={'animate-spin'} className={'md:hidden inline-flex py-2'} text={'Register'} rightIcon={<IoLogOutSharp className="text-2xl" />} />
-                                    </Link>
+                                <div className="">
+                                    {
+                                        session?.user
+                                            ?
+                                            <div className="flex gap-4 md:hidden">
+                                                <BaseButton
+                                                    className={'py-2'}
+                                                    animated
+                                                    animatedSpanOne={'animate-spin'}
+                                                    rightIcon={<MdWorkspacePremium />}
+                                                    text={'Upgrade'} />
+                                                <div className="flex items-center gap-2">
+                                                    <CustomTrigger />
+                                                </div>
+                                            </div>
+                                            :
+                                            <div className="flex gap-3 pt-2">
+                                                <Link href={'/login'}>
+                                                    <BaseButton animated className={'md:hidden inline-flex py-2'} text={'Login'} rightIcon={<IoLogInSharp className="text-2xl" />} />
+                                                </Link>
+                                                <Link href={'/register'}>
+                                                    <BaseButton animated animatedSpanOne={'animate-spin'} className={'md:hidden inline-flex py-2'} text={'Register'} rightIcon={<IoLogOutSharp className="text-2xl" />} />
+                                                </Link>
+                                            </div>
+                                    }
                                 </div>
                             </ul>
                         </div>

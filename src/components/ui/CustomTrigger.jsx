@@ -1,5 +1,6 @@
+
 import { authClient } from "@/lib/auth-client";
-import { ArrowRightFromSquare, Gear, Persons } from "@gravity-ui/icons";
+import { ArrowRightFromSquare} from "@gravity-ui/icons";
 import { Avatar, Dropdown, Label } from "@heroui/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -42,7 +43,7 @@ export function CustomTrigger() {
                             <Avatar.Fallback delayMs={600}>JD</Avatar.Fallback>
                         </Avatar>
                         <div className="flex flex-col gap-0">
-                            <p className="text-sm leading-5 font-medium">{session?.user?.name}</p>
+                            <p className="text-sm leading-5 font-medium text-foreground">{session?.user?.name}</p>
                             <p className="text-xs leading-none text-muted">{session?.user?.email}</p>
                         </div>
                     </div>
@@ -54,7 +55,7 @@ export function CustomTrigger() {
                         as={Link}
                         href="/profile"
                     >
-                        <Label>Profile</Label>
+                        <Label className="text-muted">Profile</Label>
                     </Dropdown.Item>
                     <Dropdown.Item id="logout" textValue="Logout" variant="danger">
                         <div onClick={logOut} className="flex w-full items-center justify-between gap-2">

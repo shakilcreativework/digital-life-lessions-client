@@ -17,7 +17,7 @@ export const explore = [
 ];
 
 export const company = [
-  { name: "about", path: "/about-us"},
+  { name: "About", path: "/about-us"},
   { name: "Careers", path: "/careers"},
   { name: "Press", path: "/press"},
   { name: "Contact", path: "/contact"},
