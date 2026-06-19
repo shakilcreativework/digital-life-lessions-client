@@ -158,7 +158,7 @@ const FeaturedLessons = () => {
                     className="w-full"
                 >
                     {lessonsData.map((lesson) => (
-                        <SwiperSlide key={lesson.id} className="h-auto">
+                        <SwiperSlide key={lesson.id} className="py-5">
                             <LessonCard
                                 category={lesson.category}
                                 title={lesson.title}
