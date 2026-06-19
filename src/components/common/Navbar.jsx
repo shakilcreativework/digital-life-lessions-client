@@ -137,15 +137,15 @@ const Navbar = () => {
                             })}
                         </ul>
 
-                        <div className="flex md:gap-5 items-center">
+                        <div className={`flex ${session?.user ? 'gap-4' : ''} md:gap-5 items-center`}>
                             <ThemeSwitch />
 
                             {
                                 session?.user
                                     ?
-                                    <div className="md:gap-4 hidden md:inline-flex">
+                                    <div className="md:gap-5 flex">
                                         <BaseButton
-                                            className={'py-2'}
+                                            className={'py-2 hidden md:inline-flex'}
                                             animated
                                             animatedSpanOne={'animate-spin'}
                                             rightIcon={<MdWorkspacePremium />}
@@ -218,9 +218,6 @@ const Navbar = () => {
                                                     animatedSpanOne={'animate-spin'}
                                                     rightIcon={<MdWorkspacePremium />}
                                                     text={'Upgrade'} />
-                                                <div className="flex items-center gap-2">
-                                                    <CustomTrigger />
-                                                </div>
                                             </div>
                                             :
                                             <div className="flex gap-3 pt-2">
