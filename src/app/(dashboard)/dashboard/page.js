@@ -170,7 +170,7 @@ export default function DashboardHomePage() {
               <div className="text-[9px] font-bold text-secondary mt-1">Flagged logs</div>
             </div>
             <div className="p-4 sm:p-5 bg-card border border-border/60 rounded-xl shadow-xs">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-muted mb-1">Today's New Lessons</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-muted mb-1">Today&apos;s New Lessons</div>
               <div className="text-xl sm:text-2xl font-black text-foreground">{activeUser.stats.admin.newToday}</div>
               <div className="text-[9px] font-bold text-success mt-1">Incoming streams</div>
             </div>
