@@ -48,7 +48,7 @@ export default function DashboardLayout({ children, userSession = null }) {
       {/* Identity Branding Container */}
       <div className="p-6 border-b border-border/50 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">
-          <span className="text-lg font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent tracking-wider">
+          <span className="text-lg font-black bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent tracking-wider">
             DIGITAL LIFE
           </span>
         </Link>
@@ -125,7 +125,7 @@ export default function DashboardLayout({ children, userSession = null }) {
       
       {/* MOBILE APPLICATION HEADER BANNER */}
       <header className="lg:hidden w-full h-14 bg-card/80 backdrop-blur-md border-b border-border/50 px-4 flex items-center justify-between sticky top-0 z-40">
-        <Link href="/" className="font-black text-xs tracking-wider bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+        <Link href="/" className="font-black text-xs tracking-wider bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
           DIGITAL LIFE
         </Link>
         <button
