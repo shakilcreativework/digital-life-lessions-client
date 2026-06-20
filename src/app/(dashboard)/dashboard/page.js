@@ -5,6 +5,8 @@ import Link from "next/link";
 import { MdStar } from "react-icons/md";
 import { FaCrown } from "react-icons/fa";
 import { authClient } from "@/lib/auth-client";
+import { FaPencil } from "react-icons/fa6";
+import { GrDocumentStore } from "react-icons/gr";
 
 export default function DashboardHomePage() {
   const { data: session, isPending } = authClient.useSession();
@@ -149,7 +151,7 @@ export default function DashboardHomePage() {
               isAdmin ? "bg-secondary hover:bg-secondary/90" : "bg-primary hover:bg-primary/90"
             }`}
           >
-            {isAdmin ? "Moderate Content 📝" : "Write New Lesson ✍️"}
+            {isAdmin ? <span className="flex gap-2 items-center">Moderate Content <GrDocumentStore /></span> : <span className="flex gap-2 items-center">Write New Lesson <FaPencil /></span>}
           </Link>
         </div>
       </div>
