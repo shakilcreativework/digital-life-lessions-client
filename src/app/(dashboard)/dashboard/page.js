@@ -9,12 +9,20 @@ import { authClient } from "@/lib/auth-client";
 export default function DashboardHomePage() {
   const { data: session, isPending } = authClient.useSession();
 
-  // Handle baseline fallback securely while the data hydration tree resolves
   if (isPending) {
-    return <div className="w-full h-48 bg-card/40 animate-pulse rounded-2xl" />;
+    return (
+      <div className="w-full space-y-6 p-4">
+        <div className="h-16 w-1/3 bg-card/50 animate-pulse rounded-xl" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-24 bg-card/50 animate-pulse rounded-xl" />
+          ))}
+        </div>
+      </div>
+    );
   }
 
-  // Construct a safe active user dataset with absolute data values matching the requirements specifications
+  // Fallback defaults if session data collection returns empty
   const activeUser = session?.user
     ? {
         name: session.user.name,
@@ -23,8 +31,8 @@ export default function DashboardHomePage() {
         isPremium: session.user.isPremium,
         stats: {
           user: {
-            created: 14, // Total lessons created placeholder
-            saved: 32,   // Total saved favorites placeholder
+            created: 14,
+            saved: 32,
             weeklyReflections: [24, 45, 32, 76, 52, 84, 95],
           },
           admin: {
@@ -36,7 +44,7 @@ export default function DashboardHomePage() {
         },
       }
     : {
-        name: "Guest Explorer",
+        name: "Workspace Guest",
         email: "",
         role: "user",
         isPremium: false,
@@ -46,12 +54,8 @@ export default function DashboardHomePage() {
         },
       };
 
-  // Explicit type check to confirm strict authorization privileges
   const isAdmin = activeUser.role === "admin";
-  
-  const points = isAdmin
-    ? [30, 45, 38, 70, 58, 88, 94] // Admin Platform Growth Trajectory Graph Array
-    : activeUser.stats.user.weeklyReflections; // User Personal Reflections Graph Array
+  const points = isAdmin ? [30, 45, 38, 70, 58, 88, 94] : activeUser.stats.user.weeklyReflections;
 
   // Generate smooth cubic bezier SVG continuous vector string path coordinates
   const width = 600;

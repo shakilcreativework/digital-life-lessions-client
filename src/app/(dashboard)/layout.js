@@ -29,31 +29,25 @@ export default function DashboardLayout({ children }) {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Safely extract active user properties from the active auth session
+  // Map fields strictly to match your MongoDB document parameters
   const activeUser = session?.user
     ? {
         name: session.user.name,
         email: session.user.email,
-        role: session.user.role,
-        isPremium: session.user.isPremium,
-        photoURL: session.user.image,
+        role: session.user.role, // Evaluates to "admin" or "user"
+        isPremium: session.user.isPremium, // Evaluates to true or false
+        photoURL: session.user.image, // Resolves profile image string paths
       }
     : null;
 
-  // CRITICAL SECURITY FIX: Strict check for "admin" string value to prevent truthy string bypass loops
+  // CRITICAL SECURITY GUARD: Must evaluate strictly to check string value matching "admin"
   const isAdmin = activeUser?.role === "admin";
   const targetNavigationList = isAdmin ? ADMIN_NAV_ITEMS : USER_NAV_ITEMS;
 
-  // Secure Layout Guard: If a standard user tries to view an /admin path, intercept and block
+  // Intercept standard users attempting to navigate inside the admin sub-paths
   const isTargetingAdminRoute = pathname.startsWith("/dashboard/admin");
   const isAccessDenied = isTargetingAdminRoute && !isAdmin;
 
-  const handleLogout = () => {
-    console.log("Terminating session tokens...");
-    router.push("/login");
-  };
-
-  // Prevent hydration flashing shifts while the authentication hook resolves
   if (isPending) {
     return (
       <div className="min-h-screen bg-background flex flex-col lg:flex-row antialiased animate-pulse">
@@ -63,7 +57,7 @@ export default function DashboardLayout({ children }) {
     );
   }
 
-  // Elegant error fallback container for unauthorized standard user penetration attempts
+  // Graceful Access Level Exception Block
   if (isAccessDenied) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4 text-center">
@@ -71,10 +65,10 @@ export default function DashboardLayout({ children }) {
           <div className="text-2xl">🚨</div>
           <h2 className="text-base font-bold text-foreground">Access Level Violation</h2>
           <p className="text-xs text-muted">
-            This module is restricted to platform administrators. Your workspace account does not have authorization flags for this route.
+            This workspace module is restricted to administrators. Your current account privileges do not allow entry.
           </p>
           <Link href="/dashboard" className="inline-block text-xs font-bold px-4 py-2 bg-primary text-white rounded-xl">
-            Return to Dashboard Home
+            Return to Workspace Home
           </Link>
         </div>
       </div>
@@ -143,7 +137,7 @@ export default function DashboardLayout({ children }) {
                 height={36}
                 priority
                 src={activeUser.photoURL}
-                alt={activeUser.name || "User Thumbnail"}
+                alt={activeUser.name || "User Photo"}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -155,7 +149,7 @@ export default function DashboardLayout({ children }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1">
               <p className="text-xs font-medium text-foreground truncate">
-                {activeUser?.name || "Active Session"}
+                {activeUser?.name || "Anonymous Workspace"}
               </p>
               {activeUser?.isPremium && !isAdmin && (
                 <span className="text-[9px] px-1.5 py-0.2 font-black tracking-wide rounded-md bg-secondary/10 text-secondary border border-secondary/20 shrink-0">
