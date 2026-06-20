@@ -9,20 +9,7 @@ import { FaPencil } from "react-icons/fa6";
 import { GrDocumentStore } from "react-icons/gr";
 
 export default function DashboardHomePage() {
-  const { data: session, isPending } = authClient.useSession();
-
-  if (isPending) {
-    return (
-      <div className="w-full space-y-6 p-4">
-        <div className="h-16 w-1/3 bg-card/50 animate-pulse rounded-xl" />
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-24 bg-card/50 animate-pulse rounded-xl" />
-          ))}
-        </div>
-      </div>
-    );
-  }
+  const { data: session } = authClient.useSession();
 
   // Fallback defaults if session data collection returns empty
   const activeUser = session?.user

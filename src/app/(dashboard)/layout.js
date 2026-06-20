@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
@@ -24,9 +24,8 @@ const ADMIN_NAV_ITEMS = [
 ];
 
 export default function DashboardLayout({ children }) {
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session } = authClient.useSession();
   const pathname = usePathname();
-  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Map fields strictly to match your MongoDB document parameters
@@ -47,15 +46,6 @@ export default function DashboardLayout({ children }) {
   // Intercept standard users attempting to navigate inside the admin sub-paths
   const isTargetingAdminRoute = pathname.startsWith("/dashboard/admin");
   const isAccessDenied = isTargetingAdminRoute && !isAdmin;
-
-  if (isPending) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col lg:flex-row antialiased animate-pulse">
-        <aside className="hidden lg:block w-60 shrink-0 h-screen sticky top-0 border-r border-border/60 bg-card/95" />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full" />
-      </div>
-    );
-  }
 
   // Graceful Access Level Exception Block
   if (isAccessDenied) {
@@ -235,7 +225,7 @@ export default function DashboardLayout({ children }) {
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-6 sm:space-y-8"
+          className="px-4 sm:px-6 lg:px-8 py-14 md:py-16 lg:py-8 max-w-7xl mx-auto w-full space-y-6 sm:space-y-8"
         >
           {children}
         </motion.div>
