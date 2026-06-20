@@ -145,6 +145,8 @@ const Navbar = () => {
                                     ?
                                     <div className="md:gap-5 flex">
                                         <BaseButton
+                                            as="link"
+                                            href={'/pricing'}
                                             className={'py-2 hidden md:inline-flex'}
                                             animated
                                             animatedSpanOne={'animate-spin'}
@@ -213,6 +215,9 @@ const Navbar = () => {
                                             ?
                                             <div className="flex gap-4 md:hidden">
                                                 <BaseButton
+                                                    as="link"
+                                                    href={'/pricing'}
+                                                    onClick={() => setOpen(false)}
                                                     className={'py-2'}
                                                     animated
                                                     animatedSpanOne={'animate-spin'}
