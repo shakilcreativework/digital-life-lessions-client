@@ -2,6 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
+import { MdStar } from "react-icons/md";
+import { FaCrown } from "react-icons/fa";
 
 export default function DashboardHomePage({ sessionData = null }) {
   const activeUser = sessionData || {
@@ -62,18 +64,18 @@ export default function DashboardHomePage({ sessionData = null }) {
       {/* ─── REGION A: GREETING & SHORTCUT HEADER ─── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/50 pb-5">
         <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-foreground truncate">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground truncate">
               Hello, {activeUser.name}
             </h1>
             {activeUser.isPremium && !isAdmin && (
-              <span className="text-[9px] font-black px-2 py-0.5 rounded-md bg-secondary/10 text-secondary border border-secondary/20 uppercase tracking-wider shrink-0">
-                PRO ⭐
+              <span className="flex gap-2 items-center text-xs font-medium px-2 py-0.5 rounded-md bg-card text-primary shadow-xs uppercase tracking-wider shrink-0">
+                PRO <MdStar className="text-amber-500 dark:text-yellow-500 drop-shadow-[0_2px_8px_rgba(234,179,8,0.2)] dark:drop-shadow-[0_4px_12px_rgba(234,179,8,0.4)] transition-all duration-300" />
               </span>
             )}
             {isAdmin && (
-              <span className="text-[9px] font-black px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20 uppercase tracking-wider shrink-0">
-                ADMIN 👑
+              <span className="flex gap-2 items-center text-xs font-medium px-2 py-0.5 rounded-md bg-card text-primary shadow-xs uppercase tracking-wider shrink-0">
+                ADMIN <FaCrown className="text-amber-500 dark:text-yellow-500 drop-shadow-[0_2px_8px_rgba(234,179,8,0.2)] dark:drop-shadow-[0_4px_12px_rgba(234,179,8,0.4)] transition-all duration-300" />
               </span>
             )}
           </div>
