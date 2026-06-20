@@ -24,30 +24,40 @@ const ADMIN_NAV_ITEMS = [
 ];
 
 export default function DashboardLayout({ children }) {
-  const { data: session } = authClient.useSession();
+  // 1. EXTRACT isPending TO IDENTIFY ASYNC FETCHING WINDOWS
+  const { data: session, isPending } = authClient.useSession();
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Map fields strictly to match your MongoDB document parameters
   const activeUser = session?.user
     ? {
         name: session.user.name,
         email: session.user.email,
-        role: session.user.role, // Evaluates to "admin" or "user"
-        isPremium: session.user.isPremium, // Evaluates to true or false
-        photoURL: session.user.image, // Resolves profile image string paths
+        role: session.user.role, 
+        isPremium: session.user.isPremium, 
+        photoURL: session.user.image, 
       }
     : null;
 
-  // CRITICAL SECURITY GUARD: Must evaluate strictly to check string value matching "admin"
   const isAdmin = activeUser?.role === "admin";
   const targetNavigationList = isAdmin ? ADMIN_NAV_ITEMS : USER_NAV_ITEMS;
 
-  // Intercept standard users attempting to navigate inside the admin sub-paths
   const isTargetingAdminRoute = pathname.startsWith("/dashboard/admin");
   const isAccessDenied = isTargetingAdminRoute && !isAdmin;
 
-  // Graceful Access Level Exception Block
+  // 2. CRITICAL FIX: IF THE AUTH IS STILL LOADING, RETURN A LOADING STATE 
+  // This prevents the security guard below from checking empty data prematurely!
+  if (isPending) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-xs text-muted/60 animate-pulse font-medium tracking-widest uppercase">
+          Verifying Workspace Security Core...
+        </div>
+      </div>
+    );
+  }
+
+  // 3. SECURE BLOCKER (Only evaluates after session loading is complete)
   if (isAccessDenied) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4 text-center">
@@ -70,7 +80,6 @@ export default function DashboardLayout({ children }) {
       suppressHydrationWarning
       className="flex flex-col h-full bg-card/95 backdrop-blur-md border-r border-border/60 text-foreground transition-all duration-300"
     >
-      {/* Identity Branding Container */}
       <div className="p-6 border-b border-border/50 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">
           <span className="text-lg font-black bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent tracking-wider">
@@ -79,7 +88,6 @@ export default function DashboardLayout({ children }) {
         </Link>
       </div>
 
-      {/* Nav Content Box */}
       <nav
         className="flex-1 py-6 px-4 space-y-1 overflow-y-auto scrollbar-none"
         aria-label="Dashboard Layout Main Sub-navigation"
@@ -117,7 +125,6 @@ export default function DashboardLayout({ children }) {
         })}
       </nav>
 
-      {/* Profile/Footer Anchor Grid */}
       <div className="p-4 border-t border-border/50 bg-surface/30 space-y-3">
         <div className="flex items-center gap-3 p-1">
           <div className="w-9 h-9 rounded-full bg-surface border border-border flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
@@ -158,7 +165,6 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-background flex flex-col lg:flex-row antialiased selection:bg-primary/20">
-      {/* MOBILE APPLICATION HEADER BANNER */}
       <header className="lg:hidden w-full h-14 bg-card/80 backdrop-blur-md border-b border-border/50 px-4 flex items-center justify-between sticky top-0 z-40">
         <Link
           href="/"
@@ -170,7 +176,6 @@ export default function DashboardLayout({ children }) {
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="p-2 border border-border/60 rounded-xl bg-surface text-foreground transition-all duration-200 active:scale-95 cursor-pointer"
           aria-expanded={isMobileMenuOpen}
-          aria-label="Toggle navigation dynamic panel drawer menu"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -189,7 +194,6 @@ export default function DashboardLayout({ children }) {
         </button>
       </header>
 
-      {/* MOBILE FLYOUT SLIDEOVER SIDEBAR DRAWER PANEL */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -213,12 +217,10 @@ export default function DashboardLayout({ children }) {
         )}
       </AnimatePresence>
 
-      {/* DESKTOP PERMANENT VIEW ASIDE SIDEBAR LAYER */}
       <aside className="hidden lg:block w-60 shrink-0 h-screen sticky top-0 z-30">
         {renderSidebarContent()}
       </aside>
 
-      {/* CORE DISPLAY WINDOW LAYER CONTAINER CANVAS */}
       <main className="flex-1 w-full min-w-0 bg-background overflow-x-hidden min-h-[calc(100vh-56px)] lg:min-h-screen">
         <motion.div
           key={pathname}
