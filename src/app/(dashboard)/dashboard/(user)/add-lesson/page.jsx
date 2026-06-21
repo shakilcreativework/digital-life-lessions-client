@@ -102,7 +102,7 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
         const category = rawFields.category || "";
         const emotionalTone = rawFields.emotionalTone || "";
         const imageFile = formData.get("lessonImage");
-        
+
         // Anti-tamper parameters: Force secure values on submission if user alters DOM elements
         const visibility = hasFullAccess ? (rawFields.visibility || "Public") : "Public";
         const accessLevel = hasFullAccess ? (rawFields.accessLevel || "Free") : "Free";
@@ -161,22 +161,22 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
             console.log("Assembled Lesson Node Pipeline Commit Payload:", payload);
 
             // Dynamic fetch setup to your running server instance:
-            // const response = await fetch("http://localhost:5000/api/lessons", {
-            //     method: "POST",
-            //     headers: {
-            //         "Content-Type": "application/json"
-            //     },
-            //     body: JSON.stringify(payload)
-            // });
+            const response = await fetch("http://localhost:5000/api/lessons", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
 
-            // if (!response.ok) {
-            //     throw new Error("Failed to commit post payload to backend service parameters");
-            // }
+            if (!response.ok) {
+                throw new Error("Failed to commit post payload to backend service parameters");
+            }
 
-            // const result = await response.json();
+            const result = await response.json();
 
             toast.success("Lesson and thumbnail committed successfully! 🚀", { id: "lesson-upload" });
-            
+
             // Cleanup application local states
             e.target.reset();
             setSelectedFileName("");
@@ -294,8 +294,8 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
                                 <span className="mb-2 block text-xs font-bold text-foreground uppercase tracking-wide">
                                     Lesson Visual Banner Image
                                 </span>
-                                <label 
-                                    htmlFor="lesson-image" 
+                                <label
+                                    htmlFor="lesson-image"
                                     className={cn(
                                         "group/dropzone relative flex flex-col items-center justify-center w-full min-h-32.5 rounded-xl border border-dashed bg-surface/40 hover:bg-surface transition-all duration-200 cursor-pointer text-center px-6 border-border focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary",
                                         isFormDisabled && "opacity-40 cursor-not-allowed pointer-events-none"
@@ -310,7 +310,7 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
                                         disabled={isFormDisabled}
                                         className="sr-only" // Hidden visually for clean style tokens, reachable via accessible keyboard focus navigation paths
                                     />
-                                    
+
                                     {selectedFileName ? (
                                         <div className="flex flex-col items-center space-y-2 animate-fadeIn">
                                             <FiCheckCircle className="text-2xl text-green-500" />
