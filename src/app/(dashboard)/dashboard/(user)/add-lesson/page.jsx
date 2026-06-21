@@ -161,7 +161,7 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
             console.log("Assembled Lesson Node Pipeline Commit Payload:", payload);
 
             // Dynamic fetch setup to your running server instance:
-            const response = await fetch("http://localhost:5000/api/lessons", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
