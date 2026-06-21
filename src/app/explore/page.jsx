@@ -1,6 +1,6 @@
 import Container from "@/components/shared/Container";
-import LessonCard from "@/components/ui/TestLessonCard";
 import EmptyState from "@/components/ui/EmptyState"; 
+import LessonCard from "@/components/ui/LessonCard";
 import { getAllLessons } from "@/lib/actions/lessons";
 
 const PublicPage = async () => {

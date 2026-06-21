@@ -1,85 +1,165 @@
+
 "use client";
 
+import React, { useState } from "react";
 import Image from "next/image";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { BiCommentDetail } from "react-icons/bi";
-import { FiBookmark } from "react-icons/fi";
+import { FiBookmark, FiLock } from "react-icons/fi"; // Added FiLock for visual indicator
+import { authClient } from "@/lib/auth-client"; // Import your authClient instance
+import BaseButton from "./BaseButton";
 
-// Reusable card accepting static props mimicking the UI layout
-const LessonCard = ({
-  category,
-  title,
-  authorName,
-  authorImg,
-  ImageSrc,
-  likes,
-  comments,
-  badgeColorClass = "text-muted font-medium bg-background py-1"
-}) => {
+const LessonCard = ({ lesson }) => {
+  // Fetch the active session details
+  const { data: session } = authClient.useSession();
+
+  // 1. Destructure all fields from your payload object directly with safe defaults
+  const {
+    category = "Unclassified",
+    title = "Untitled Insight Log",
+    description = "",
+    authorName = "Anonymous",
+    authorImg = "",
+    image = "",          // Maps directly to your payload.image (ImgBB URL)
+    likesCount = 0,
+    CommentsCount = 0,   // Matches your payload uppercase 'C' parameter exactly
+    isPremiumLesson = true, // Added schema property flag. Set to true if the individual post is premium content
+  } = lesson || {};
+
+  // 2. Validate user tiers against content locks
+  const isAdmin = session?.user?.role === "admin";
+  const isPremiumUser = session?.user?.isPremium === true;
+  const hasFullAccess = isAdmin || isPremiumUser;
+
+  // Lock logic: If the lesson is marked as premium content, evaluate access permissions
+  const isLocked = isPremiumLesson && !hasFullAccess;
+
+  // 3. Local state trackers for instant UI micro-interactions
+  const [isLiked, setIsLiked] = useState(false);
+  const [localLikes, setLocalLikes] = useState(likesCount);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
+  const handleLikeToggle = (e) => {
+    e.preventDefault();
+    if (isLocked) return; // Block interactions if locked
+    setIsLiked(!isLiked);
+    setLocalLikes((prev) => (isLiked ? prev - 1 : prev + 1));
+  };
+
   return (
-    <div className="bg-card border border-border hover:border-border-hover rounded-2xl p-4 flex flex-col justify-between h-100 shadow-sm transition-all duration-300 group hover:-translate-y-1">
+    <div className="relative bg-card border border-border hover:border-border-hover rounded-2xl p-4 flex flex-col justify-between h-full shadow-sm transition-all duration-300 group hover:-translate-y-1 overflow-hidden">
+      
+      {/* Premium Blur Shield Overlay */}
+      {isLocked && (
+        <div className="absolute inset-0 z-20 backdrop-blur-[6px] bg-background/60 flex flex-col items-center justify-center p-4 text-center transition-all duration-300">
+          <div className="p-3 bg-primary/10 border border-primary/20 rounded-full text-primary mb-3 shadow-sm animate-pulse">
+            <FiLock className="w-5 h-5" />
+          </div>
+          <h4 className="text-sm font-bold text-foreground tracking-tight">Premium Insight</h4>
+          <p className="text-[11px] text-muted-foreground max-w-45 mt-1 leading-normal">
+            Upgrade your membership to unlock this strategy log.
+          </p>
+          <BaseButton
+           as="link"
+           href={'/pricing'}
+           animated
+           animatedSpanOne={'animate-ping'}
+            className="mt-4 text-xs font-semibold px-4 py-1.5 bg-primary text-primary-foreground hover:bg-primary/95 rounded-lg shadow-xs transition-colors"
+          >
+            Unlock Lesson
+          </BaseButton>
+        </div>
+      )}
 
-      <div>
+      {/* Main Lesson Card Body Wrapper */}
+      <div className={isLocked ? "select-none pointer-events-none opacity-40 blur-[1px]" : ""}>
         {/* Card Artwork Wrapper */}
         <div className="relative w-full h-48 rounded-xl overflow-hidden bg-surface mb-4">
-          <Image
-            src={ImageSrc}
-            alt={title}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            priority
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+          {image ? (
+            <Image
+              src={image}
+              alt={title}
+              fill
+              unoptimized // 💡 Bypasses Next.js domain verification errors for external ImgBB URLs
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              priority
+              className="object-fit transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className="w-full h-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
+              No Media Asset Connected
+            </div>
+          )}
         </div>
 
         {/* Dynamic Category Tag */}
-        <span className={`inline-block text-xs px-2.5 py-0.5 shadow-xs border border-border rounded-full mb-3 tracking-wide ${badgeColorClass}`}>
+        <span className="inline-block text-xs px-2.5 py-0.5 shadow-xs border border-border rounded-full mb-3 tracking-wide text-primary bg-primary/10 font-medium">
           {category}
         </span>
 
-        {/* Title */}
-        <h3 className="text-base font-medium text-foreground line-clamp-1 leading-snug tracking-tight group-hover:text-muted transition-colors">
+        {/* Title & Optional Description Snippet */}
+        <h3 className="text-base font-bold text-foreground line-clamp-1 leading-snug tracking-tight group-hover:text-primary transition-colors duration-200">
           {title}
         </h3>
+        {description && (
+          <p className="text-xs text-muted-foreground line-clamp-2 mt-1.5 leading-relaxed">
+            {description}
+          </p>
+        )}
       </div>
 
       {/* Footer Area: Author and Performance Metrics */}
-      <div className="space-y-4 pt-4">
+      <div className={`space-y-4 pt-4 ${isLocked ? "select-none pointer-events-none opacity-40 blur-[1px]" : ""}`}>
 
         {/* Author Avatar Group */}
         <div className="flex items-center gap-2">
-          <div className="relative w-7 h-7 rounded-full overflow-hidden border border-border">
-            <Image
-              src={authorImg}
-              alt={authorName}
-              fill
-              sizes="40px"
-              className="object-cover"
-            />
+          <div className="relative w-7 h-7 rounded-full overflow-hidden border border-border bg-muted flex items-center justify-center">
+            {authorImg ? (
+              <Image
+                src={authorImg}
+                alt={authorName}
+                fill
+                unoptimized // Bypasses domain check for Google Auth user profile avatars
+                sizes="40px"
+                className="object-cover"
+              />
+            ) : (
+              <span className="text-[10px] font-black text-primary uppercase">
+                {authorName.charAt(0)}
+              </span>
+            )}
           </div>
-          <span className="text-xs font-semibold text-muted">{authorName}</span>
+          <span className="text-xs font-semibold text-muted-foreground">{authorName}</span>
         </div>
 
         {/* Action Button Row */}
-        <div className="flex items-center justify-between text-muted text-xs font-medium pt-1">
+        <div className="flex items-center justify-between text-muted-foreground text-xs font-medium pt-2 border-t border-border/40">
           <div className="flex items-center gap-4">
 
-            {/* Likes */}
-            <button className="flex items-center gap-1.5 hover:text-danger transition-colors">
-              <AiOutlineHeart className="w-4 h-4" />
-              <span>{likes}</span>
+            {/* Likes Trigger Field */}
+            <button 
+              onClick={handleLikeToggle}
+              disabled={isLocked}
+              className={`flex items-center gap-1.5 transition-colors focus:outline-none ${isLiked ? "text-red-500" : "hover:text-red-500"}`}
+            >
+              {isLiked ? <AiFillHeart className="w-4 h-4 text-red-500" /> : <AiOutlineHeart className="w-4 h-4" />}
+              <span>{localLikes}</span>
             </button>
 
-            {/* Comments */}
-            <button className="flex items-center gap-1.5 hover:text-success transition-colors">
+            {/* Comments Counter Display */}
+            <button disabled={isLocked} className="flex items-center gap-1.5 hover:text-success transition-colors focus:outline-none">
               <BiCommentDetail className="w-4 h-4" />
-              <span>{comments}</span>
+              <span>{CommentsCount}</span>
             </button>
           </div>
 
           {/* Bookmark Button */}
-          <button className="hover:text-secondary transition-colors p-1 rounded-md hover:bg-surface">
-            <FiBookmark className="w-4 h-4" />
+          <button 
+            onClick={() => !isLocked && setIsBookmarked(!isBookmarked)}
+            disabled={isLocked}
+            className={`transition-colors p-1 rounded-md hover:bg-surface focus:outline-none ${isBookmarked ? "text-amber-500" : "hover:text-amber-500"}`}
+          >
+            <FiBookmark className={`w-4 h-4 ${isBookmarked ? "fill-amber-500 stroke-amber-500" : ""}`} />
           </button>
         </div>
 

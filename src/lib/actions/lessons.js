@@ -1,12 +1,3 @@
-// export const getAllLessons = async () => {
-//     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons`, {
-//         cache: "no-store",
-//     })
-//     const lessons = await response.json();
-//     return lessons;
-// };
-
-
 export const getAllLessons = async () => {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
