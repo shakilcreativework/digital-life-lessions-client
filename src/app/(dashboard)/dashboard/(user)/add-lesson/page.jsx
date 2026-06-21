@@ -6,9 +6,7 @@ import {
     TextField,
     Input,
     Label,
-    FieldError,
-    TextArea,
-    Button
+    FieldError
 } from "@heroui/react";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
@@ -23,8 +21,8 @@ import {
     FiActivity
 } from "react-icons/fi";
 import BaseButton from "@/components/ui/BaseButton";
+import { authClient } from "@/lib/auth-client";
 
-// Static mapping definition arrays matching exact schema requirements
 const CATEGORIES = [
     "Personal Growth",
     "Career",
@@ -40,21 +38,16 @@ const EMOTIONAL_TONES = [
     "Gratitude"
 ];
 
-const VISIBILITY_OPTIONS = [
+const ALL_VISIBILITY_OPTIONS = [
     { value: "Public", label: "🌍 Public (Visible to everyone)" },
     { value: "Private", label: "🔒 Private (Personal draft space)" }
 ];
 
-const ACCESS_LEVELS = [
+const ALL_ACCESS_LEVELS = [
     { value: "Free", label: "🆓 Free Access Tier" },
     { value: "Premium", label: "💎 Premium Access Tier" }
 ];
 
-/**
- * Generates a clean URL slug from a text string.
- * @param {string} title 
- * @returns {string} Clean URL slug.
- */
 const generateSlug = (title) => {
     if (!title) return "";
     return title
@@ -67,7 +60,22 @@ const generateSlug = (title) => {
 };
 
 export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmittingExternally = false }) {
+    const { data: session } = authClient.useSession();
     const [loading, setLoading] = useState(false);
+
+    // Context Evaluation Flags
+    const isAdmin = session?.user?.role === "admin";
+    const isPremium = session?.user?.isPremium === true;
+    const hasFullAccess = isAdmin || isPremium;
+
+    // Dynamically evaluated collection nodes based on access level clearances
+    const visibilityOptions = hasFullAccess
+        ? ALL_VISIBILITY_OPTIONS
+        : ALL_VISIBILITY_OPTIONS.filter(opt => opt.value === "Public");
+
+    const accessLevels = hasFullAccess
+        ? ALL_ACCESS_LEVELS
+        : ALL_ACCESS_LEVELS.filter(tier => tier.value === "Free");
 
     const handleFormSubmission = async (e) => {
         e.preventDefault();
@@ -76,33 +84,22 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
         const formData = new FormData(e.currentTarget);
         const rawFields = Object.fromEntries(formData.entries());
 
-        // Strict front-end validation check loops
         const title = rawFields.title?.trim() || "";
         const description = rawFields.description?.trim() || "";
         const category = rawFields.category || "";
         const emotionalTone = rawFields.emotionalTone || "";
-        const visibility = rawFields.visibility || "Public";
-        const accessLevel = rawFields.accessLevel || "Free";
+        
+        // Anti-tamper parameters: Force secure values on submission if user alters DOM elements
+        const visibility = hasFullAccess ? (rawFields.visibility || "Public") : "Public";
+        const accessLevel = hasFullAccess ? (rawFields.accessLevel || "Free") : "Free";
 
-        if (!title) {
-            toast.error("Please provide a lesson title");
-            return;
-        }
-        if (!category) {
-            toast.error("Please select a valid category option");
-            return;
-        }
-        if (!description) {
-            toast.error("Please fill in your lesson description content");
-            return;
-        }
+        if (!title) return toast.error("Please provide a lesson title");
+        if (!category) return toast.error("Please select a valid category option");
+        if (!description) return toast.error("Please fill in your lesson description content");
 
         try {
             setLoading(true);
-            //   const loadingToastId = toast.loading("Saving new lesson inside your logic repository...", {
-            //     id: "lesson-upload"
-            //   });
-
+            
             const payload = {
                 title,
                 slug: generateSlug(title),
@@ -115,43 +112,23 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
                 likesCount: 0,
                 isFeatured: false,
                 isReviewed: false,
-                creatorId: creatorId || "anonymous",
+                creatorId: creatorId || session?.user?.id || "anonymous",
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
 
-            console.log(payload);
+            console.log("Assembled Lesson Node Pipeline Commit Payload:", payload);
 
-            // Native fetch configuration mapping over to the running database cluster express server
-            //   const response = await fetch("http://localhost:5000/api/lessons", {
-            //     method: "POST",
-            //     headers: {
-            //       "Content-Type": "application/json"
-            //     },
-            //     body: JSON.stringify(payload)
-            //   });
+            // Simulating API action block. Wire back your fetch system context when ready:
+            toast.success("Lesson committed successfully to network timeline! 🚀");
+            e.target.reset();
 
-            //   if (!response.ok) {
-            //     throw new Error("Failed to commit post payload to backend service parameters");
-            //   }
-
-            //   const result = await response.json();
-
-            //   toast.success("Lesson committed successfully to network timeline! 🚀", {
-            //     id: "lesson-upload"
-            //   });
-
-            // Clear layout input context fields cleanly
-            //   e.target.reset();
-
-            //   if (onSubmitSuccess) {
-            //     onSubmitSuccess(result);
-            //   }
+            if (onSubmitSuccess) {
+                onSubmitSuccess(payload);
+            }
         } catch (error) {
             console.error("Critical submission disruption failure:", error);
-            toast.error("Failed to post transaction parameters to network node arrays", {
-                id: "lesson-upload"
-            });
+            toast.error("Failed to post transaction parameters to network node arrays");
         } finally {
             setLoading(false);
         }
@@ -163,7 +140,6 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
         <main className="min-h-screen px-4 sm:px-6 lg:px-8 bg-background transition-colors duration-200">
             <div className="max-w-6xl mx-auto">
 
-                {/* Component Intro Header Block */}
                 <div className="mb-8 border-b border-border pb-6">
                     <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
                         Draft New Repository Insight
@@ -173,14 +149,12 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
                     </p>
                 </div>
 
-                {/* Structural Form Frame Layout */}
                 <Form onSubmit={handleFormSubmission} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
                     {/* Main content capture cards layout column */}
                     <div className="lg:col-span-2 space-y-6">
                         <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-xs space-y-6">
 
-                            {/* Core Context Input Block Header */}
                             <div>
                                 <h2 className="text-sm font-bold text-foreground uppercase tracking-wider mb-1 flex items-center gap-2">
                                     <FiFileText className="text-primary text-base" /> Core Insight Parameters
@@ -315,7 +289,7 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
                                             "disabled:opacity-50 disabled:cursor-not-allowed"
                                         )}
                                     >
-                                        {VISIBILITY_OPTIONS.map((opt) => (
+                                        {visibilityOptions.map((opt) => (
                                             <option key={opt.value} value={opt.value} className="bg-card text-foreground">{opt.label}</option>
                                         ))}
                                     </select>
@@ -342,7 +316,7 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
                                             "disabled:opacity-50 disabled:cursor-not-allowed"
                                         )}
                                     >
-                                        {ACCESS_LEVELS.map((tier) => (
+                                        {accessLevels.map((tier) => (
                                             <option key={tier.value} value={tier.value} className="bg-card text-foreground">{tier.label}</option>
                                         ))}
                                     </select>

@@ -144,14 +144,33 @@ const Navbar = () => {
                                 session?.user
                                     ?
                                     <div className="md:gap-5 flex">
-                                        <BaseButton
-                                            as="link"
-                                            href={'/pricing'}
-                                            className={'py-2 hidden md:inline-flex'}
-                                            animated
-                                            animatedSpanOne={'animate-spin'}
-                                            rightIcon={<MdWorkspacePremium />}
-                                            text={'Upgrade'} />
+                                        {session?.user?.role === "admin"
+                                            ?
+                                            <BaseButton
+                                                className={'py-2 hidden md:inline-flex'}
+                                                animated
+                                                animatedSpanOne={'animate-spin'}
+                                                rightIcon={<MdWorkspacePremium />}
+                                                text={'Admin'} />
+                                            :
+                                            session?.user?.isPremium
+                                                ?
+                                                <BaseButton
+                                                    className={'py-2 hidden md:inline-flex'}
+                                                    animated
+                                                    animatedSpanOne={'animate-spin'}
+                                                    rightIcon={<MdWorkspacePremium />}
+                                                    text={'Premium'} />
+                                                :
+                                                <BaseButton
+                                                    as="link"
+                                                    href={'/pricing'}
+                                                    className={'py-2 hidden md:inline-flex'}
+                                                    animated
+                                                    animatedSpanOne={'animate-spin'}
+                                                    rightIcon={<MdWorkspacePremium />}
+                                                    text={'Upgrade'} />
+                                        }
                                         <div className="flex items-center gap-2">
                                             <CustomTrigger />
                                         </div>
