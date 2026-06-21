@@ -13,26 +13,29 @@ const LessonCard = ({ lesson }) => {
   // Fetch the active session details
   const { data: session } = authClient.useSession();
 
-  // 1. Destructure all fields from your payload object directly with safe defaults
-  const {
-    category = "Unclassified",
-    title = "Untitled Insight Log",
-    description = "",
-    authorName = "Anonymous",
-    authorImg = "",
-    image = "",          // Maps directly to your payload.image (ImgBB URL)
-    likesCount = 0,
-    CommentsCount = 0,   // Matches your payload uppercase 'C' parameter exactly
-    isPremiumLesson = true, // Added schema property flag. Set to true if the individual post is premium content
-  } = lesson || {};
+  // 1. Destructure fields using your actual database keys
+const {
+  category = "Unclassified",
+  title = "Untitled Insight Log",
+  description = "",
+  authorName = "Anonymous",
+  authorImg = "",
+  image = "",          
+  likesCount = 0,
+  CommentsCount = 0,   
+  accessLevel = "Free", // ✅ Maps directly to your real DB string ("Premium" or "Free")
+} = lesson || {};
 
-  // 2. Validate user tiers against content locks
-  const isAdmin = session?.user?.role === "admin";
-  const isPremiumUser = session?.user?.isPremium === true;
-  const hasFullAccess = isAdmin || isPremiumUser;
+// 2. Validate user tiers against content locks
+const isAdmin = session?.user?.role === "admin";
+const isPremiumUser = session?.user?.isPremium === true;
+const hasFullAccess = isAdmin || isPremiumUser;
 
-  // Lock logic: If the lesson is marked as premium content, evaluate access permissions
-  const isLocked = isPremiumLesson && !hasFullAccess;
+// ✅ A lesson is premium if accessLevel is exactly "Premium"
+const isPremiumLesson = accessLevel === "Premium"; 
+
+// Lock logic: True if it's a Premium lesson and user lacks full access
+const isLocked = isPremiumLesson && !hasFullAccess;
 
   // 3. Local state trackers for instant UI micro-interactions
   const [isLiked, setIsLiked] = useState(false);
