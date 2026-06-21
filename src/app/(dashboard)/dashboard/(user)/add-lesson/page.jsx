@@ -141,6 +141,8 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
             }
 
             const payload = {
+                authorName: session?.user?.name,
+                authorImg: session?.user?.image,
                 title,
                 slug: generateSlug(title),
                 description,
@@ -151,6 +153,8 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
                 image: uploadedImageUrl, // Embedded remote direct access link
                 likes: [],
                 likesCount: 0,
+                comments: [],
+                CommentsCount: 0,
                 isFeatured: false,
                 isReviewed: false,
                 creatorId: creatorId || session?.user?.id || "anonymous",
