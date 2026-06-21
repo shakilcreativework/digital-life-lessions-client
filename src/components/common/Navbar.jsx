@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // 🎯 Added for bulletproof path monitoring
 import { navLinks } from "@/lib/navLinks";
 import { IoClose, IoLogInSharp, IoLogOutSharp } from "react-icons/io5";
 import { AiOutlineMenu } from "react-icons/ai";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Logo from "../ui/Logo";
 import Container from "../shared/Container";
 import { ThemeSwitch } from "../shared/ThemeSwitch";
@@ -15,10 +16,8 @@ import { MdWorkspacePremium } from "react-icons/md";
 
 const Navbar = () => {
     const [open, setOpen] = useState(false);
-    const [activeSection, setActiveSection] = useState("/");
+    const pathname = usePathname(); // 🎯 Tracks current URL path precisely
     const { data: session } = authClient.useSession();
-    // console.log(session?.user?.role);
-    // const isAdmin = session?.user?.role === "admin";
 
     // if user active and get from session then show public and private route
     const visibleLinks = navLinks.filter(nav => {
@@ -28,78 +27,6 @@ const Navbar = () => {
 
     const handleMenu = () => {
         setOpen(!open);
-    };
-
-    // 1. Setup Intersection Observer to monitor matching layout nodes
-    useEffect(() => {
-        // Find HTML target element blocks by cleansing path patterns
-        const sections = visibleLinks
-            .map((link) => {
-                // Handles both hash formats ("#about") and page paths ("/about")
-                const cleanId = link.path.replace(/^\/#|^\/|^#/, "");
-                return cleanId ? document.getElementById(cleanId) : null;
-            })
-            .filter(Boolean);
-
-        const observerOptions = {
-            root: null,
-            rootMargin: "-40% 0px -50% 0px", // High-accuracy window zone focal alignment tracker
-            threshold: 0,
-        };
-
-        const observerCallback = (entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    const targetId = entry.target.id;
-
-                    // Match the precise path array item that corresponds to the visible section ID
-                    const matchedLink = visibleLinks.find((link) => {
-                        const cleanPath = link.path.replace(/^\/#|^\/|^#/, "");
-                        return cleanPath === targetId;
-                    });
-
-                    if (matchedLink) {
-                        setActiveSection(matchedLink.path);
-                    }
-                }
-            });
-        };
-
-        const observer = new IntersectionObserver(observerCallback, observerOptions);
-        sections.forEach((section) => observer.observe(section));
-
-        // 💡 FALLBACK: Highlight Home ("/") if the user scrolls all the way back up to the top
-        const handleScrollReset = () => {
-            if (window.scrollY < 80) {
-                setActiveSection("/");
-            }
-        };
-        window.addEventListener("scroll", handleScrollReset);
-
-        return () => {
-            sections.forEach((section) => observer.unobserve(section));
-            window.removeEventListener("scroll", handleScrollReset);
-        };
-    }, [visibleLinks]);
-
-    // 2. Click handler to handle clean, smooth window scrolling transitions
-    const handleScroll = (e, path) => {
-        const cleanId = path.replace(/^\/#|^\/|^#/, "");
-        const element = document.getElementById(cleanId);
-
-        if (element) {
-            e.preventDefault();
-            element.scrollIntoView({ behavior: "smooth" });
-            setActiveSection(path);
-            setOpen(false); // Close mobile menu drawer
-            window.history.pushState(null, "", path);
-        } else if (path === "/") {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            setActiveSection("/");
-            setOpen(false);
-            window.history.pushState(null, "", "/");
-        }
     };
 
     return (
@@ -115,11 +42,16 @@ const Navbar = () => {
                         {/* Desktop Navigation Links */}
                         <ul className="hidden lg:flex lg:gap-8 items-center">
                             {visibleLinks.map((nav) => {
-                                const isActive = activeSection === nav.path;
+                                // 🎯 Strict validation matching parameters to prevent bleed overlaps
+                                const isActive = 
+                                    nav.path === "/" 
+                                        ? pathname === "/" 
+                                        : pathname === nav.path || pathname.startsWith(nav.path + "/");
+
                                 return (
                                     <li key={nav.name}>
                                         <Link
-                                            onClick={(e) => handleScroll(e, nav.path)}
+                                            onClick={() => setOpen(false)}
                                             href={nav.path}
                                             className={`text-sm font-medium transition-colors duration-300 relative py-1 block ${isActive
                                                 ? "text-purple-500 font-semibold"
@@ -212,11 +144,16 @@ const Navbar = () => {
                         <div className="overflow-hidden">
                             <ul className="space-y-3 flex flex-col pt-2 border-muted/10">
                                 {visibleLinks.map((nav) => {
-                                    const isActive = activeSection === nav.path;
+                                    // 🎯 Strict mobile match evaluation logic rules
+                                    const isActive = 
+                                        nav.path === "/" 
+                                            ? pathname === "/" 
+                                            : pathname === nav.path || pathname.startsWith(nav.path + "/");
+
                                     return (
                                         <li key={nav.name}>
                                             <Link
-                                                onClick={(e) => handleScroll(e, nav.path)}
+                                                onClick={() => setOpen(false)}
                                                 href={nav.path}
                                                 className={`text-sm font-medium transition-all duration-200 w-full block p-2.5 rounded-xl ${isActive
                                                     ? "bg-purple-500/10 text-purple-400 font-semibold border-l-4 border-purple-500 pl-3"
@@ -245,10 +182,10 @@ const Navbar = () => {
                                             </div>
                                             :
                                             <div className="flex gap-3 pt-2">
-                                                <Link href={'/login'}>
+                                                <Link href={'/login'} onClick={() => setOpen(false)}>
                                                     <BaseButton animated className={'md:hidden inline-flex py-2'} text={'Login'} rightIcon={<IoLogInSharp className="text-2xl" />} />
                                                 </Link>
-                                                <Link href={'/register'}>
+                                                <Link href={'/register'} onClick={() => setOpen(false)}>
                                                     <BaseButton animated animatedSpanOne={'animate-spin'} className={'md:hidden inline-flex py-2'} text={'Register'} rightIcon={<IoLogOutSharp className="text-2xl" />} />
                                                 </Link>
                                             </div>
