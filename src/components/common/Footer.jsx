@@ -53,7 +53,7 @@ const Footer = () => {
                         </div>
                     </ul>
                     <ul className="flex flex-col gap-4">
-                        <h3 className="text-foreground text-lg font-medium">Explore</h3>
+                        <h3 className="text-foreground text-lg font-medium">Company</h3>
                         <div className="flex flex-col gap-2">
                             {
                                 company.map((explore, index) => <li key={index}>
@@ -63,7 +63,7 @@ const Footer = () => {
                         </div>
                     </ul>
                     <ul className="flex flex-col gap-4">
-                        <h3 className="text-foreground text-lg font-medium">Explore</h3>
+                        <h3 className="text-foreground text-lg font-medium">Support</h3>
                         <div className="flex flex-col gap-2">
                             {
                                 support.map((explore, index) => <li key={index}>
