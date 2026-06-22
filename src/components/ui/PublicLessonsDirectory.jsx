@@ -184,7 +184,7 @@ export default function PublicLessonsDirectory({
       {/* 🎯 DATA GRID LAYER WIRE ROUTING */}
       <div>
         {activePaginatedSlice.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
             {activePaginatedSlice.map((item) => (
               <LessonCard key={item._id} lesson={item} />
             ))}
@@ -199,7 +199,7 @@ export default function PublicLessonsDirectory({
       {/* 📑 PAGINATION NAVIGATION COMPONENT ROW */}
       {totalPages > 1 && (
         <nav 
-          className="w-full flex items-center justify-between border-t border-border pt-6 select-none"
+          className="w-full flex items-center justify-center pt-6 gap-4 select-none"
           aria-label="Lessons pagination navigation selector"
         >
           <button
