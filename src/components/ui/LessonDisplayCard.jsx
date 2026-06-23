@@ -12,6 +12,7 @@ import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { motion, AnimatePresence } from "framer-motion";
 import { authClient } from "@/lib/auth-client";
 import toast, { Toaster } from "react-hot-toast";
+import { BiLike, BiSolidLike } from "react-icons/bi";
 
 export default function LessonDisplayCard({ lessonData = {} }) {
   const [isMounted, setIsMounted] = useState(false);
@@ -64,7 +65,7 @@ export default function LessonDisplayCard({ lessonData = {} }) {
   const [isLiked, setIsLiked] = useState(false);
   const [likeOffset, setLikeOffset] = useState(0);
   const [isBookmarked, setIsBookmarked] = useState(bookmarkedByCount);
-  const [favsCount, setFavsCount] = useState(5);
+  const [favsCount, setFavsCount] = useState(isBookmarked);
   const [viewsCount] = useState(() => Math.floor(Math.random() * 10000));
 
   const [isReportOpen, setIsReportOpen] = useState(false);
@@ -320,7 +321,9 @@ export default function LessonDisplayCard({ lessonData = {} }) {
                         : "bg-surface hover:bg-border/30 text-foreground border-border disabled:opacity-40 disabled:cursor-not-allowed"
                       }`}
                   >
-                    <FiBookmark className={`w-4 h-4 ${isBookmarked ? "fill-current" : ""}`} />
+                    {/* <BiLike className={`w-4 h-4 ${isBookmarked ? "fill-current" : ""}`} /> */}
+                    {favsCount ? <BiSolidLike className="w-4 h-4 text-secondary" /> : <BiLike className="w-4 h-4" />}
+                    {/* <BiLike className={`w-4 h-4 ${isBookmarked ? "fill-current" : ""}`} /> */}
                     <span>{favsCount.toLocaleString()} Favorites</span>
                   </button>
                 </div>
