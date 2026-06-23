@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { authClient } from "@/lib/auth-client";
 import toast, { Toaster } from "react-hot-toast";
 import { BiLike, BiSolidLike } from "react-icons/bi";
+import LessonCard from "./LessonCard";
 
 export default function LessonDisplayCard({ lessonData = {} }) {
   const [isMounted, setIsMounted] = useState(false);
@@ -40,7 +41,7 @@ export default function LessonDisplayCard({ lessonData = {} }) {
     likesCount = 0,
     comments = [],
     CommentsCount = 0,
-    bookmarkedBy= [],
+    bookmarkedBy = [],
     bookmarkedByCount,
     creatorId = "",
     createdAt,
@@ -49,8 +50,12 @@ export default function LessonDisplayCard({ lessonData = {} }) {
   const {
     totalLessonsCreated,
   } = lessonData?.authorStats;
+
+  // similar lessons
+  const similarLessons = lessonData?.recommendedLessons;
+
   console.log(lessonData);
-  console.log(lessonData?.authorStats);
+  console.log(lessonData?.recommendedLessons);
 
 
   // LOCK EVALUATION PATTERN
@@ -305,8 +310,8 @@ export default function LessonDisplayCard({ lessonData = {} }) {
                     onClick={handleLikeClick}
                     disabled={isLocked}
                     className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border transition-all ${isLiked
-                        ? "bg-primary/10 text-primary border-primary/20"
-                        : "bg-surface hover:bg-border/30 text-foreground border-border disabled:opacity-40 disabled:cursor-not-allowed"
+                      ? "bg-primary/10 text-primary border-primary/20"
+                      : "bg-surface hover:bg-border/30 text-foreground border-border disabled:opacity-40 disabled:cursor-not-allowed"
                       }`}
                   >
                     {isLiked ? <AiFillHeart className="w-4 h-4 text-primary" /> : <AiOutlineHeart className="w-4 h-4" />}
@@ -317,8 +322,8 @@ export default function LessonDisplayCard({ lessonData = {} }) {
                     onClick={handleBookmarkClick}
                     disabled={isLocked}
                     className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border transition-all ${isBookmarked
-                        ? "bg-secondary/10 text-secondary border-secondary/20"
-                        : "bg-surface hover:bg-border/30 text-foreground border-border disabled:opacity-40 disabled:cursor-not-allowed"
+                      ? "bg-secondary/10 text-secondary border-secondary/20"
+                      : "bg-surface hover:bg-border/30 text-foreground border-border disabled:opacity-40 disabled:cursor-not-allowed"
                       }`}
                   >
                     {/* <BiLike className={`w-4 h-4 ${isBookmarked ? "fill-current" : ""}`} /> */}
@@ -477,6 +482,14 @@ export default function LessonDisplayCard({ lessonData = {} }) {
 
         </aside>
 
+      </div>
+
+      {/* recommeded lesson */}
+      <div className="space-y-5 pt-10">
+        <h1 className="text-xl font-bold">Similar Lessions: {similarLessons.length}</h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+          {similarLessons.length && similarLessons.map((similarLessonData, index) => <LessonCard key={index} lesson={similarLessonData} />)}
+        </div>
       </div>
 
       {/* Flag Report Confirmation Popup Modal */}
