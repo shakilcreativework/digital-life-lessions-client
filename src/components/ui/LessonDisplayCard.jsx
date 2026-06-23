@@ -65,7 +65,7 @@ export default function LessonDisplayCard({ lessonData = {} }) {
   const [isLiked, setIsLiked] = useState(false);
   const [likeOffset, setLikeOffset] = useState(0);
   const [isBookmarked, setIsBookmarked] = useState(bookmarkedByCount);
-  const [favsCount, setFavsCount] = useState(isBookmarked);
+  const [favsCount, setFavsCount] = useState(0);
   const [viewsCount] = useState(() => Math.floor(Math.random() * 10000));
 
   const [isReportOpen, setIsReportOpen] = useState(false);
