@@ -227,7 +227,7 @@ export default function LessonDisplayCard({ lessonData = {} }) {
 
               {/* Title Header Section */}
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold text-foreground">
+                <h1 className="text-3xl lg:text-4xl font-bold text-foreground">
                   {title}
                 </h1>
               </div>
