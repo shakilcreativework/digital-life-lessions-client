@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
@@ -8,21 +8,18 @@ import { BiCommentDetail } from "react-icons/bi";
 import { FiBookmark, FiLock, FiArrowRight, FiCalendar } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { authClient } from "@/lib/auth-client";
-import BaseButton from "./BaseButton";
+import toast from "react-hot-toast";
 
 const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      setIsMounted(true);
-    });
+    const frame = requestAnimationFrame(() => setIsMounted(true));
     return () => cancelAnimationFrame(frame);
   }, []);
 
   const { data: session } = authClient.useSession();
 
-  // 1. Destructure core properties safely from the server payload
   const {
     _id = "",
     title = "Untitled Insight Log",
@@ -36,32 +33,25 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
     emotionalTone = "Neutral",
     accessLevel = "Free",
     createdAt = new Date().toISOString(),
-    likes = [], 
-    bookmarkedBy = []
   } = lesson || {};
 
-  // 2. Validate security credentials and configuration states
   const isAdmin = session?.user?.role === "admin";
   const isPremiumUser = session?.user?.isPremium === true;
   const hasFullAccess = isAdmin || isPremiumUser;
   const isPremiumLesson = accessLevel === "Premium";
   
-  // Guard visibility mechanics carefully across client builds
   const isLocked = isMounted && isPremiumLesson && !hasFullAccess;
 
-  // 3. Optimized Local State Management (Fixes Synchronous Cascading Renders)
   const [isLiked, setIsLiked] = useState(false);
   const [likeOffset, setLikeOffset] = useState(0);
   const [isBookmarked, setIsBookmarked] = useState(false);
 
-  // Derive final value on-the-fly during render pass to prevent sync cycle traps
   const currentLikesCount = likesCount + likeOffset;
 
-  // Track parent changes during reconciliation instead of using useEffect loops
   const [prevLikesCount, setPrevLikesCount] = useState(likesCount);
   if (likesCount !== prevLikesCount) {
     setPrevLikesCount(likesCount);
-    setLikeOffset(0); // Reset interactive local adjustments on upstream data refreshes
+    setLikeOffset(0);
   }
 
   const handleLikeClick = (e) => {
@@ -74,6 +64,8 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
 
     if (onLikeToggle) {
       onLikeToggle(_id, nextLikedState);
+    } else {
+      toast.success(nextLikedState ? "Lesson liked ❤️" : "Like removed");
     }
   };
 
@@ -86,10 +78,11 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
 
     if (onBookmarkToggle) {
       onBookmarkToggle(_id, nextBookmarkState);
+    } else {
+      toast.success(nextBookmarkState ? "Saved to Favorites" : "Removed from Favorites");
     }
   };
 
-  // Safe formatting wrapper designed to prevent server-side string serialization mismatches
   const getFormattedDate = () => {
     try {
       return new Date(createdAt).toLocaleDateString("en-US", {
@@ -105,7 +98,7 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
   return (
     <div className="relative bg-card border border-border hover:border-border-hover rounded-2xl p-4 flex flex-col justify-between h-full shadow-xs transition-all duration-300 group hover:-translate-y-1 overflow-hidden">
       
-      {/* Dynamic Premium Access Shield Layer */}
+      {/* Premium Lock Overlay */}
       <AnimatePresence>
         {isLocked && (
           <motion.div 
@@ -113,7 +106,7 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: "linear" }}
-            className="absolute inset-0 z-20 backdrop-blur-md bg-[#FAF8F3]/75 dark:bg-[#1E1E1E]/75 flex flex-col items-center justify-center p-6 text-center"
+            className="absolute inset-0 z-20 backdrop-blur-md bg-background/90 dark:bg-[#1E1E1E]/90 flex flex-col items-center justify-center p-6 text-center"
           >
             <motion.div 
               initial={{ scale: 0.85, opacity: 0 }}
@@ -148,27 +141,20 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
               transition={{ duration: 0.2, delay: 0.16 }}
               className="w-full max-w-40"
             >
-              <BaseButton
-                as="link"
+              <Link
                 href="/pricing"
-                animated
-                animatedSpanOne="animate-ping"
-                className="mt-4 w-full text-xs font-bold px-4 py-2 bg-primary text-white hover:bg-primary-hover rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2"
+                className="mt-4 w-full inline-block text-center text-xs font-bold px-4 py-2 bg-primary text-white hover:bg-primary-hover rounded-xl shadow-xs transition-colors"
               >
                 Unlock Lesson
-              </BaseButton>
+              </Link>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Component Core Content Layout Section */}
-      <div 
-        className="flex flex-col h-full justify-between"
-        aria-hidden={isLocked ? "true" : "false"}
-      >
+      <div className="flex flex-col h-full justify-between" aria-hidden={isLocked ? "true" : "false"}>
         <div>
-          {/* Layout Container for Graphic Assets */}
+          {/* Image Area */}
           <div className="relative w-full h-48 rounded-xl overflow-hidden bg-surface mb-4 border border-border/20">
             {image ? (
               <Image
@@ -177,8 +163,7 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
                 fill
                 unoptimized
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                priority
-                className="object-fit transition-transform duration-500 group-hover:scale-103"
+                className="object-fit transition-transform duration-500 group-hover:scale-105"
               />
             ) : (
               <div className="w-full h-full bg-surface flex items-center justify-center text-xs text-muted font-medium">
@@ -186,7 +171,6 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
               </div>
             )}
             
-            {/* Context Badge Overlays */}
             <div className="absolute top-3 right-3 z-10 select-none">
               <span className={`text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-md shadow-xs block border ${
                 isPremiumLesson 
@@ -198,7 +182,7 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
             </div>
           </div>
 
-          {/* Dynamic Badges Block */}
+          {/* Badges */}
           <div className="flex flex-wrap items-center gap-2 mb-3 select-none">
             <span className="inline-block text-[11px] px-2.5 py-0.5 rounded-full tracking-wide text-secondary bg-secondary/10 font-bold border border-secondary/5">
               {category}
@@ -210,7 +194,7 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
             )}
           </div>
 
-          {/* Core Text & Metadata Elements */}
+          {/* Title & Description */}
           <h3 className="text-base font-bold text-foreground line-clamp-1 leading-snug tracking-tight group-hover:text-primary transition-colors duration-200">
             {title}
           </h3>
@@ -229,10 +213,9 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
           </div>
         </div>
 
-        {/* Action Controls Alignment Row */}
+        {/* Bottom Section */}
         <div className="space-y-4 pt-3 border-t border-border/60">
-          
-          {/* Identity/Author Branding Frame */}
+          {/* Author */}
           <div className="flex items-center gap-2.5 select-none">
             <div className="relative w-7 h-7 rounded-full overflow-hidden border border-border bg-surface flex items-center justify-center shrink-0">
               {authorImg ? (
@@ -253,16 +236,14 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
             <span className="text-xs font-bold text-foreground truncate">{authorName}</span>
           </div>
 
-          {/* Metrics & Interaction Matrix Elements */}
+          {/* Actions */}
           <div className="flex items-center justify-between gap-2 text-muted text-xs font-medium pt-1">
             <div className="flex items-center gap-2.5">
-              
-              {/* Dynamic Action Trigger: Upvote / Like Toggle */}
               <button
                 onClick={handleLikeClick}
                 disabled={isLocked}
                 tabIndex={isLocked ? -1 : 0}
-                aria-label={`Like this entry. Core current evaluation aggregate is ${currentLikesCount}`}
+                aria-label={`Like this entry. Current count is ${currentLikesCount}`}
                 className={`flex items-center gap-1.5 py-1 px-2 rounded-lg transition-colors focus:outline-hidden ${
                   isLiked 
                     ? "text-primary bg-primary/5 font-bold" 
@@ -277,25 +258,18 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
                 <span className="text-[11px] tabular-nums">{currentLikesCount}</span>
               </button>
 
-              {/* Reflection Indicator Metrics Counter */}
-              <div 
-                className="flex items-center gap-1.5 py-1 px-1.5 font-semibold text-muted/90 select-none"
-                aria-label={`This entry has collected ${CommentsCount} comments`}
-              >
+              <div className="flex items-center gap-1.5 py-1 px-1.5 font-semibold text-muted/90 select-none">
                 <BiCommentDetail className="w-4 h-4" aria-hidden="true" />
                 <span className="text-[11px] tabular-nums">{CommentsCount}</span>
               </div>
             </div>
 
-            {/* Path Links and Secondary Tools Matrix */}
             <div className="flex items-center gap-2">
-              
-              {/* Interactive Tooling Badge: Bookmark Trigger */}
               <button
                 onClick={handleBookmarkClick}
                 disabled={isLocked}
                 tabIndex={isLocked ? -1 : 0}
-                aria-label={isBookmarked ? "Remove this strategy log from saved index" : "Save this insight strategy item into your local library index"}
+                aria-label={isBookmarked ? "Remove from saved" : "Save to favorites"}
                 className={`transition-colors p-1.5 rounded-lg border border-transparent focus:outline-hidden ${
                   isBookmarked 
                     ? "text-secondary bg-secondary/5" 
@@ -305,24 +279,19 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
                 <FiBookmark className={`w-4.5 h-4.5 ${isBookmarked ? "fill-secondary stroke-secondary" : ""}`} aria-hidden="true" />
               </button>
 
-              {/* Primary Content Target Anchor Trigger */}
               <Link
                 href={`/lessons/${_id}`}
                 disabled={isLocked}
                 tabIndex={isLocked ? -1 : 0}
-                aria-label={`Open interactive dashboard breakdown view for lesson titled: ${title}`}
                 className="inline-flex items-center gap-1 text-[11px] font-bold bg-surface hover:bg-border/40 text-foreground border border-border px-3 py-1.5 rounded-lg transition-all focus:outline-hidden select-none"
               >
                 <span>Details</span>
                 <FiArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </Link>
-
             </div>
           </div>
-
         </div>
       </div>
-
     </div>
   );
 };
