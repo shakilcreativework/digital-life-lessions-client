@@ -339,14 +339,14 @@ export default function LessonDisplayCard({ lessonData = {} }) {
           </article>
 
           {/* 6. Comment Feed Interactive Section (Protected via Premium Evaluation) */}
-          <section className="bg-card border border-border rounded-3xl p-6 sm:p-8 relative overflow-hidden min-h-[200px]">
+          <section className="bg-card border border-border rounded-3xl p-6 sm:p-8 relative overflow-hidden min-h-50">
             <div className="flex items-center gap-2 mb-6">
               <FiMessageSquare className="w-5 h-5 text-secondary" />
               <h2 className="text-xl font-bold tracking-tight">Discussion ({isLocked ? "?" : localComments.length})</h2>
             </div>
 
             {isLocked ? (
-              <div className="absolute inset-x-0 bottom-0 top-[60px] flex flex-col items-center justify-center p-6 bg-linear-to-b from-transparent via-card/80 to-card backdrop-blur-xs text-center z-10">
+              <div className="absolute inset-x-0 bottom-0 top-15 flex flex-col items-center justify-center p-6 bg-linear-to-b from-transparent via-card/80 to-card backdrop-blur-xs text-center z-10">
                 <FiLock className="w-8 h-8 text-muted mb-2 animate-bounce" />
                 <h4 className="text-sm font-bold mb-1">Discussion Thread Locked</h4>
                 <p className="text-xs text-muted max-w-xs">
