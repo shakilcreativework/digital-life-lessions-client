@@ -155,6 +155,8 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
                 likesCount: 0,
                 comments: [],
                 CommentsCount: 0,
+                bookmarkedBy: [],
+                bookmarkedByCount: 0,
                 isFeatured: false,
                 isReviewed: false,
                 creatorId: creatorId || session?.user?.id || "anonymous",

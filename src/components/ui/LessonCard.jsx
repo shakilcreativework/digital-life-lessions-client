@@ -36,6 +36,8 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
     emotionalTone = "Neutral",
     accessLevel = "Free",
     createdAt = new Date().toISOString(),
+    likes = [], 
+    bookmarkedBy = []
   } = lesson || {};
 
   // 2. Validate security credentials and configuration states
@@ -305,7 +307,7 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
 
               {/* Primary Content Target Anchor Trigger */}
               <Link
-                href={`/explore/${_id}`}
+                href={`/lessons/${_id}`}
                 disabled={isLocked}
                 tabIndex={isLocked ? -1 : 0}
                 aria-label={`Open interactive dashboard breakdown view for lesson titled: ${title}`}
