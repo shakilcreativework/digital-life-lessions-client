@@ -39,10 +39,18 @@ export default function LessonDisplayCard({ lessonData = {} }) {
     likesCount = 0,
     comments = [],
     CommentsCount = 0,
+    bookmarkedBy= [],
+    bookmarkedByCount,
     creatorId = "",
     createdAt,
     updatedAt,
-  } = lessonData;
+  } = lessonData?.lesson;
+  const {
+    totalLessonsCreated,
+  } = lessonData?.authorStats;
+  console.log(lessonData);
+  console.log(lessonData?.authorStats);
+
 
   // LOCK EVALUATION PATTERN
   const isAdmin = session?.user?.role === "admin";
@@ -55,8 +63,8 @@ export default function LessonDisplayCard({ lessonData = {} }) {
   // Interactive UI Reactive States
   const [isLiked, setIsLiked] = useState(false);
   const [likeOffset, setLikeOffset] = useState(0);
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [favsCount, setFavsCount] = useState(342);
+  const [isBookmarked, setIsBookmarked] = useState(bookmarkedByCount);
+  const [favsCount, setFavsCount] = useState(5);
   const [viewsCount] = useState(() => Math.floor(Math.random() * 10000));
 
   const [isReportOpen, setIsReportOpen] = useState(false);
@@ -428,8 +436,8 @@ export default function LessonDisplayCard({ lessonData = {} }) {
               <p className="text-[11px] text-muted font-mono mt-0.5">ID: {creatorId}</p>
             </div>
             <div className="bg-surface/50 rounded-xl p-2.5 border border-border/40">
-              <span className="text-xs font-bold text-foreground">Total Lessons Created: </span>
-              <span className="text-xs font-black text-primary font-mono">14 lessons</span>
+              <span className="text-xs font-bold text-foreground">Total Lessons Created:</span>
+              <span className="text-xs font-black text-primary font-mono"> {totalLessonsCreated} lessons</span>
             </div>
             <Link
               href={`/profile/${creatorId}`}
