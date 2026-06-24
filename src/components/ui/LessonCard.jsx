@@ -29,6 +29,7 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
     image = "",
     likesCount = 0,
     CommentsCount = 0,
+    bookmarkedByCount = 0,
     category = "Unclassified",
     emotionalTone = "Neutral",
     accessLevel = "Free",
@@ -39,14 +40,16 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
   const isPremiumUser = session?.user?.isPremium === true;
   const hasFullAccess = isAdmin || isPremiumUser;
   const isPremiumLesson = accessLevel === "Premium";
-  
+
   const isLocked = isMounted && isPremiumLesson && !hasFullAccess;
 
   const [isLiked, setIsLiked] = useState(false);
   const [likeOffset, setLikeOffset] = useState(0);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [FavoriteOffset, setFavoriteOffset] = useState(0);
 
   const currentLikesCount = likesCount + likeOffset;
+  const currentFavoritesCount = bookmarkedByCount + FavoriteOffset;
 
   const [prevLikesCount, setPrevLikesCount] = useState(likesCount);
   if (likesCount !== prevLikesCount) {
@@ -54,32 +57,73 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
     setLikeOffset(0);
   }
 
-  const handleLikeClick = (e) => {
+  // ❤️ Like Button Logic (Real-time atomic array toggle)
+  const handleLikeClick = async (e) => {
     e.preventDefault();
     if (isLocked) return;
-    
+
+    if (!session?.user) {
+      toast.error("Please log in to like");
+      return;
+    }
+
+    // 1. Optimistic UI update (Instant execution)
     const nextLikedState = !isLiked;
     setIsLiked(nextLikedState);
     setLikeOffset((prev) => (nextLikedState ? prev + 1 : prev - 1));
 
-    if (onLikeToggle) {
-      onLikeToggle(_id, nextLikedState);
-    } else {
+    try {
+      // 2. Dispatch data update to MongoDB via server routing
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${_id}/like`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: session?.user.id || session?.user._id }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error();
+
       toast.success(nextLikedState ? "Lesson liked ❤️" : "Like removed");
+    } catch (error) {
+      // 3. Fallback rollback state if network streaming breaks
+      setIsLiked(!nextLikedState);
+      setLikeOffset((prev) => (nextLikedState ? prev - 1 : prev + 1));
+      toast.error("Network sync error. Could not process like action.");
     }
   };
 
-  const handleBookmarkClick = (e) => {
+  // 🔖 Save to Favorites Toggle Logic
+  const handleBookmarkClick = async (e) => {
     e.preventDefault();
     if (isLocked) return;
 
-    const nextBookmarkState = !isBookmarked;
-    setIsBookmarked(nextBookmarkState);
+    if (!session?.user) {
+      toast.error("Please log in to Favorites Bookmark");
+      return;
+    }
 
-    if (onBookmarkToggle) {
-      onBookmarkToggle(_id, nextBookmarkState);
-    } else {
-      toast.success(nextBookmarkState ? "Saved to Favorites" : "Removed from Favorites");
+    // 1. Optimistic UI update (Instant execution)
+    const nextFavoriteState = !isLiked;
+    setIsBookmarked(nextFavoriteState);
+    setFavoriteOffset((prev) => (nextFavoriteState ? prev + 1 : prev - 1));
+
+    try {
+      // 2. Dispatch data update to MongoDB via server routing
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${_id}/favorite`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: session?.user.id || session?.user._id }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error();
+
+      toast.success(nextFavoriteState ? "Lesson liked ❤️" : "Like removed");
+    } catch (error) {
+      // 3. Fallback rollback state if network streaming breaks
+      setIsLiked(!nextFavoriteState);
+      setLikeOffset((prev) => (nextFavoriteState ? prev - 1 : prev + 1));
+      toast.error("Network sync error. Could not process like action.");
     }
   };
 
@@ -97,18 +141,18 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
 
   return (
     <div className="relative bg-card border border-border hover:border-border-hover rounded-2xl p-4 flex flex-col justify-between h-full shadow-xs transition-all duration-300 group hover:-translate-y-1 overflow-hidden">
-      
+
       {/* Premium Lock Overlay */}
       <AnimatePresence>
         {isLocked && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: "linear" }}
             className="absolute inset-0 z-20 backdrop-blur-md bg-background/90 dark:bg-[#1E1E1E]/90 flex flex-col items-center justify-center p-6 text-center"
           >
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 350, damping: 25, delay: 0.02 }}
@@ -116,8 +160,8 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
             >
               <FiLock className="w-6 h-6" aria-hidden="true" />
             </motion.div>
-            
-            <motion.h4 
+
+            <motion.h4
               initial={{ y: 6, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.2, delay: 0.08 }}
@@ -125,8 +169,8 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
             >
               Premium Insight
             </motion.h4>
-            
-            <motion.p 
+
+            <motion.p
               initial={{ y: 6, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.2, delay: 0.12 }}
@@ -134,7 +178,7 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
             >
               Upgrade your membership to unlock this strategy log.
             </motion.p>
-            
+
             <motion.div
               initial={{ y: 6, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -164,19 +208,19 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
                 unoptimized
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
+                loading="eager"
               />
             ) : (
               <div className="w-full h-full bg-surface flex items-center justify-center text-xs text-muted font-medium">
                 No Media Connected
               </div>
             )}
-            
+
             <div className="absolute top-3 right-3 z-10 select-none">
-              <span className={`text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-md shadow-xs block border ${
-                isPremiumLesson 
-                  ? "bg-primary text-white border-transparent" 
+              <span className={`text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-md shadow-xs block border ${isPremiumLesson
+                  ? "bg-primary text-white border-transparent"
                   : "bg-card border-border text-foreground"
-              }`}>
+                }`}>
                 {accessLevel}
               </span>
             </div>
@@ -198,7 +242,7 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
           <h3 className="text-base font-bold text-foreground line-clamp-1 leading-snug tracking-tight group-hover:text-primary transition-colors duration-200">
             {title}
           </h3>
-          
+
           {description && (
             <p className="text-xs text-muted line-clamp-2 mt-2 leading-relaxed font-medium">
               {description}
@@ -244,11 +288,10 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
                 disabled={isLocked}
                 tabIndex={isLocked ? -1 : 0}
                 aria-label={`Like this entry. Current count is ${currentLikesCount}`}
-                className={`flex items-center gap-1.5 py-1 px-2 rounded-lg transition-colors focus:outline-hidden ${
-                  isLiked 
-                    ? "text-primary bg-primary/5 font-bold" 
+                className={`flex items-center gap-1.5 py-1 px-2 rounded-lg transition-colors focus:outline-hidden ${isLiked
+                    ? "text-primary bg-primary/5 font-bold"
                     : "hover:text-primary hover:bg-surface font-semibold"
-                }`}
+                  }`}
               >
                 {isLiked ? (
                   <AiFillHeart className="w-4 h-4 text-primary" aria-hidden="true" />
@@ -270,13 +313,12 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
                 disabled={isLocked}
                 tabIndex={isLocked ? -1 : 0}
                 aria-label={isBookmarked ? "Remove from saved" : "Save to favorites"}
-                className={`transition-colors p-1.5 rounded-lg border border-transparent focus:outline-hidden ${
-                  isBookmarked 
-                    ? "text-secondary bg-secondary/5" 
+                className={`transition-colors p-1.5 rounded-lg border border-transparent focus:outline-hidden ${currentFavoritesCount
+                    ? "text-secondary bg-secondary/5"
                     : "hover:text-secondary hover:bg-surface"
-                }`}
+                  }`}
               >
-                <FiBookmark className={`w-4.5 h-4.5 ${isBookmarked ? "fill-secondary stroke-secondary" : ""}`} aria-hidden="true" />
+                <FiBookmark className={`w-4.5 h-4.5 ${currentFavoritesCount ? "fill-secondary stroke-secondary" : ""}`} aria-hidden="true" />
               </button>
 
               <Link

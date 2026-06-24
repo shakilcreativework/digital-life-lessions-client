@@ -70,8 +70,8 @@ export default function LessonDisplayCard({ lessonData = {} }) {
   // Interactive UI Reactive States
   const [isLiked, setIsLiked] = useState(false);
   const [likeOffset, setLikeOffset] = useState(0);
-  const [isBookmarked, setIsBookmarked] = useState(bookmarkedByCount);
-  const [favsCount, setFavsCount] = useState(0);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [FavoriteOffset, setFavoriteOffset] = useState(0);
   const [viewsCount] = useState(() => Math.floor(Math.random() * 10000));
 
   const [isReportOpen, setIsReportOpen] = useState(false);
@@ -81,6 +81,7 @@ export default function LessonDisplayCard({ lessonData = {} }) {
   const [localComments, setLocalComments] = useState(comments || []);
 
   const currentLikesCount = likesCount + likeOffset;
+  const currentFavoritesCount = bookmarkedByCount + FavoriteOffset;
 
   // Sync state block reflecting LessonCard offset logic
   const [prevLikesCount, setPrevLikesCount] = useState(likesCount);
@@ -153,36 +154,38 @@ export default function LessonDisplayCard({ lessonData = {} }) {
 
   // 🔖 Save to Favorites Toggle Logic
   const handleBookmarkClick = async (e) => {
-    e.preventDefault();
-    if (isLocked) return;
-
-    if (!session?.user) {
-      toast.error("Please log in to manage favorites.");
-      return;
-    }
-
-    const nextBookmarkState = !isBookmarked;
-    setIsBookmarked(nextBookmarkState);
-    setFavsCount((prev) => (nextBookmarkState ? prev + 1 : prev - 1));
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${_id}/favorite`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: session?.user.id || session?.user._id }),
-      });
-
-      const data = await response.json();
-      if (!response.ok || !data.success) throw new Error();
-
-      toast.success(data.isFavorited ? "Saved to Favorites" : "Removed from Favorites");
-      setIsBookmarked(data.isFavorited);
-    } catch (error) {
-      setIsBookmarked(!nextBookmarkState);
-      setFavsCount((prev) => (nextBookmarkState ? prev - 1 : prev + 1));
-      toast.error("Failed to sync favorite selection.");
-    }
-  };
+      e.preventDefault();
+      if (isLocked) return;
+  
+      if (!session?.user) {
+        toast.error("Please log in to Favorites Bookmark");
+        return;
+      }
+  
+      // 1. Optimistic UI update (Instant execution)
+      const nextFavoriteState = !isLiked;
+      setIsBookmarked(nextFavoriteState);
+      setFavoriteOffset((prev) => (nextFavoriteState ? prev + 1 : prev - 1));
+  
+      try {
+        // 2. Dispatch data update to MongoDB via server routing
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${_id}/favorite`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: session?.user.id || session?.user._id }),
+        });
+  
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error();
+  
+        toast.success(nextFavoriteState ? "Lesson liked ❤️" : "Like removed");
+      } catch (error) {
+        // 3. Fallback rollback state if network streaming breaks
+        setIsLiked(!nextFavoriteState);
+        setLikeOffset((prev) => (nextFavoriteState ? prev - 1 : prev + 1));
+        toast.error("Network sync error. Could not process like action.");
+      }
+    };
 
   const handleShare = async () => {
     try {
@@ -409,9 +412,9 @@ export default function LessonDisplayCard({ lessonData = {} }) {
                         }`}
                     >
                       {/* <BiLike className={`w-4 h-4 ${isBookmarked ? "fill-current" : ""}`} /> */}
-                      {favsCount ? <BiSolidLike className="w-4 h-4 text-secondary" /> : <BiLike className="w-4 h-4" />}
+                      {isBookmarked ? <BiSolidLike className="w-4 h-4 text-secondary" /> : <BiLike className="w-4 h-4" />}
                       {/* <BiLike className={`w-4 h-4 ${isBookmarked ? "fill-current" : ""}`} /> */}
-                      <span>{favsCount.toLocaleString()} Favorites</span>
+                      <span>{currentFavoritesCount.toLocaleString()} Favorites</span>
                     </button>
                   </div>
 
