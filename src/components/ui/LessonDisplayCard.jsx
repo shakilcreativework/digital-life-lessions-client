@@ -457,7 +457,7 @@ export default function LessonDisplayCard({ lessonData = {} }) {
                   <div className="divide-y divide-border pt-4 mt-2">
                     {localComments.map((commentItem, index) => (
                       <div key={commentItem._id || index} className="py-4 first:pt-0 last:pb-0 flex gap-4 items-start">
-                        {commentItem.authorImg ? (
+                        {commentItem?.authorImg && commentItem.authorImg !== "undefined" && commentItem.authorImg !== "" ? (
                           <div className="relative w-9 h-9 overflow-hidden rounded-full shrink-0 border border-border">
                             <Image src={commentItem.authorImg} alt="" fill sizes="36px" className="object-cover" unoptimized />
                           </div>
