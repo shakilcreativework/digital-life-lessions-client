@@ -8,6 +8,7 @@ import { HiDatabase } from "react-icons/hi";
 import { getAllUsers } from "@/lib/actions/users";
 import toast from "react-hot-toast";
 import { getAllLessons } from "@/lib/actions/lessons";
+import { getAllLessonsReports } from "@/lib/actions/lessonsReports";
 
 // Pro Production Data Stream Matrix
 const ANALYTICS_DATASET = [
@@ -69,28 +70,29 @@ export default function AdminDashboardLanding() {
   const { data: session, isPending } = authClient.useSession();
   const [users, setUsers] = useState([]);
   const [lessons, setLessons] = useState([]);
+  const [lessonsReports, setLessonsReports] = useState([]);
 
   useEffect(() => {
-    const loadUsers = async () => {
+    const loadDashboardData = async () => {
       try {
-        const usersData = await getAllUsers();
+        // 🚀 Parallel Execution: All 3 network requests fire simultaneously
+        const [usersData, lessonsData, reportsData] = await Promise.all([
+          getAllUsers(),
+          getAllLessons(),
+          getAllLessonsReports(),
+        ]);
+
+        // ✅ Batched Updates: React groups these state updates into a single re-render
         setUsers(usersData);
-      } catch (error) {
-        toast.error("Error loading users:", error);
-      }
-    };
-
-    const loadLessons = async () => {
-      try {
-        const lessonsData = await getAllLessons();
         setLessons(lessonsData);
+        setLessonsReports(reportsData);
       } catch (error) {
-        toast.error("Error loading lessons:", error);
+        console.error("Dashboard asset sync disruption:", error);
+        toast.error("Critical failure updating global data arrays.");
       }
     };
 
-    loadUsers();
-    loadLessons();
+    loadDashboardData();
   }, []);
 
   // console.log(users);
@@ -150,7 +152,7 @@ export default function AdminDashboardLanding() {
         </div>
         <div className="p-5 bg-card border border-border/60 rounded-2xl shadow-xs">
           <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider block">Reported Content</span>
-          <div className="text-2xl font-black text-purple-400 mt-1">12</div>
+          <div className="text-2xl font-black text-purple-400 mt-1">{lessonsReports?.length}</div>
           <p className="text-[10px] text-purple-400/70 mt-1">Flagged review items</p>
         </div>
         <div className="p-5 bg-card border border-border/60 rounded-2xl shadow-xs">
