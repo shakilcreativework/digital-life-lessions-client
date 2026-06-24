@@ -201,8 +201,8 @@ export default function AddLessonForm({ onSubmitSuccess, creatorId, isSubmitting
     const isFormDisabled = loading || isSubmittingExternally;
 
     return (
-        <main className="min-h-screen px-4 sm:px-6 lg:px-8 bg-background transition-colors duration-200">
-            <div className="max-w-6xl mx-auto">
+        <main className="pb-20 transition-colors duration-200">
+            <div className="w-full">
 
                 <div className="mb-8 border-b border-border pb-6">
                     <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
