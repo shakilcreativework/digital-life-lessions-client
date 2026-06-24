@@ -19,6 +19,7 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
   }, []);
 
   const { data: session } = authClient.useSession();
+  const userId = session?.user?.id || session?.user?._id;
 
   const {
     _id = "",
@@ -27,6 +28,8 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
     authorName = "Anonymous",
     authorImg = "",
     image = "",
+    likes = [],
+    bookmarkedBy = [],
     likesCount = 0,
     CommentsCount = 0,
     bookmarkedByCount = 0,
@@ -43,21 +46,44 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
 
   const isLocked = isMounted && isPremiumLesson && !hasFullAccess;
 
-  const [isLiked, setIsLiked] = useState(false);
+  // Sync state cleanly via lazy initializers (Fixes the synchronous setState inside useEffect warning)
+  const [isLiked, setIsLiked] = useState(() => {
+    return userId ? likes.includes(userId) : false;
+  });
+  const [isBookmarked, setIsBookmarked] = useState(() => {
+    return userId ? bookmarkedBy.includes(userId) : false;
+  });
+
   const [likeOffset, setLikeOffset] = useState(0);
-  const [isBookmarked, setIsBookmarked] = useState(false);
   const [FavoriteOffset, setFavoriteOffset] = useState(0);
 
   const currentLikesCount = likesCount + likeOffset;
   const currentFavoritesCount = bookmarkedByCount + FavoriteOffset;
 
+  // Sync state if props change from an external parent rerender
   const [prevLikesCount, setPrevLikesCount] = useState(likesCount);
   if (likesCount !== prevLikesCount) {
     setPrevLikesCount(likesCount);
     setLikeOffset(0);
+    setIsLiked(userId ? likes.includes(userId) : false);
   }
 
-  // ❤️ Like Button Logic (Real-time atomic array toggle)
+  const [prevBookmarkedCount, setPrevBookmarkedCount] = useState(bookmarkedByCount);
+  if (bookmarkedByCount !== prevBookmarkedCount) {
+    setPrevBookmarkedCount(bookmarkedByCount);
+    setFavoriteOffset(0);
+    setIsBookmarked(userId ? bookmarkedBy.includes(userId) : false);
+  }
+
+  // Handle the edge-case where session resolves after the initial component mounting phase
+  const [prevUserId, setPrevUserId] = useState(userId);
+  if (userId !== prevUserId) {
+    setPrevUserId(userId);
+    setIsLiked(userId ? likes.includes(userId) : false);
+    setIsBookmarked(userId ? bookmarkedBy.includes(userId) : false);
+  }
+
+  // ❤️ Like Button Logic
   const handleLikeClick = async (e) => {
     e.preventDefault();
     if (isLocked) return;
@@ -67,27 +93,22 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
       return;
     }
 
-    // 1. Optimistic UI update (Instant execution)
     const nextLikedState = !isLiked;
     setIsLiked(nextLikedState);
     setLikeOffset((prev) => (nextLikedState ? prev + 1 : prev - 1));
 
     try {
-      // 2. Dispatch data update to MongoDB via server routing
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${_id}/like`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: session?.user.id || session?.user._id }),
+        body: JSON.stringify({ userId }),
       });
 
       const data = await response.json();
       if (!response.ok || !data.success) throw new Error();
 
-      {
-        nextLikedState ? toast.success("Lesson liked ❤️") : toast.success("Like removed");
-      }
+      nextLikedState ? toast.success("Lesson liked ❤️") : toast.success("Like removed");
     } catch (error) {
-      // 3. Fallback rollback state if network streaming breaks
       setIsLiked(!nextLikedState);
       setLikeOffset((prev) => (nextLikedState ? prev - 1 : prev + 1));
       toast.error("Network sync error. Could not process like action.");
@@ -104,30 +125,25 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
       return;
     }
 
-    // 1. Optimistic UI update (Instant execution)
     const nextFavoriteState = !isBookmarked;
     setIsBookmarked(nextFavoriteState);
     setFavoriteOffset((prev) => (nextFavoriteState ? prev + 1 : prev - 1));
 
     try {
-      // 2. Dispatch data update to MongoDB via server routing
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${_id}/favorite`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: session?.user.id || session?.user._id }),
+        body: JSON.stringify({ userId }),
       });
 
       const data = await response.json();
       if (!response.ok || !data.success) throw new Error();
 
-      {
-        nextFavoriteState ? toast.success("Lesson Favorites bookmark") : toast.error("Favorites bookmark removed")
-      }
+      nextFavoriteState ? toast.success("Lesson Favorites bookmark") : toast.error("Favorites bookmark removed");
     } catch (error) {
-      // 3. Fallback rollback state if network streaming breaks
-      setIsLiked(!nextFavoriteState);
-      setLikeOffset((prev) => (nextFavoriteState ? prev - 1 : prev + 1));
-      toast.error("Network sync error. Could not process like action.");
+      setIsBookmarked(!nextFavoriteState);
+      setFavoriteOffset((prev) => (nextFavoriteState ? prev - 1 : prev + 1));
+      toast.error("Network sync error. Could not process bookmark action.");
     }
   };
 
@@ -297,7 +313,11 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
                     : "hover:text-primary hover:bg-surface font-semibold"
                   }`}
               >
-                <AiFillHeart className={`w-4 h-4 ${currentLikesCount ? "fill-primary stroke-primary" : ""}`}  aria-hidden="true" />
+                {isLiked ? (
+                  <AiFillHeart className="w-4 h-4 fill-primary stroke-primary" aria-hidden="true" />
+                ) : (
+                  <AiFillHeart className="w-4 h-4 text-muted/40 stroke-muted/40" aria-hidden="true" />
+                )}
                 <span className="text-[11px] tabular-nums">{currentLikesCount}</span>
               </button>
 
@@ -313,12 +333,12 @@ const LessonCard = ({ lesson, onLikeToggle, onBookmarkToggle }) => {
                 disabled={isLocked}
                 tabIndex={isLocked ? -1 : 0}
                 aria-label={isBookmarked ? "Remove from saved" : "Save to favorites"}
-                className={`transition-colors p-1.5 rounded-lg border border-transparent focus:outline-hidden ${currentFavoritesCount
+                className={`transition-colors p-1.5 rounded-lg border border-transparent focus:outline-hidden ${isBookmarked
                     ? "text-secondary bg-secondary/5"
                     : "hover:text-secondary hover:bg-surface"
                   }`}
               >
-                <FiBookmark className={`w-4.5 h-4.5 ${currentFavoritesCount ? "fill-secondary stroke-secondary" : ""}`} aria-hidden="true" />
+                <FiBookmark className={`w-4.5 h-4.5 ${isBookmarked ? "fill-secondary stroke-secondary" : ""}`} aria-hidden="true" />
               </button>
 
               <Link
