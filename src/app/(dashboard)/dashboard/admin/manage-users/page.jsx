@@ -284,7 +284,7 @@ export default function ManageUserPage() {
 
                                             {/* ROLE DESIGNATION LEVEL COL */}
                                             <td className="py-4 px-6">
-                                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold tracking-wide ${user.role === "admin"
+                                                <span className={`inline-flex text-nowrap items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold tracking-wide ${user.role === "admin"
                                                     ? "bg-secondary/10 text-secondary"
                                                     : "bg-muted/10 text-muted"
                                                     }`}>

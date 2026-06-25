@@ -201,11 +201,11 @@ export default function ReportedLessonsPage() {
                             <tbody className="divide-y divide-border text-sm">
                                 {filteredLessons.map((lesson) => (
                                     <tr key={lesson._id} className="hover:bg-surface/40 transition-colors">
-                                        <td className="p-4 pl-6 font-semibold text-foreground max-w-xs truncate" title={lesson.title}>
+                                        <td className="p-4 pl-6 font-medium text-foreground max-w-xs truncate" title={lesson.title}>
                                             {lesson.title}
                                         </td>
                                         <td className="p-4">
-                                            <span className="text-xs bg-background px-2.5 py-1 rounded-md font-medium border border-border capitalize">
+                                            <span className="text-xs bg-background px-2.5 py-1 rounded-md text-nowrap border border-border capitalize">
                                                 {lesson.category || "General"}
                                             </span>
                                         </td>
@@ -217,7 +217,7 @@ export default function ReportedLessonsPage() {
                                         <td className="p-4 text-center">
                                             <button
                                                 onClick={() => setDetailsModal({ isOpen: true, lesson })}
-                                                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-background text-foreground border border-border hover:border-border-hover rounded-xl transition-all"
+                                                className="inline-flex items-center text-nowrap gap-1.5 text-xs font-semibold px-3 py-1.5 bg-background text-foreground border border-border hover:border-border-hover rounded-xl transition-all"
                                                 aria-label="Open detailed report logs"
                                             >
                                                 <FiEye className="w-3.5 h-3.5" /> View Reason Logs
