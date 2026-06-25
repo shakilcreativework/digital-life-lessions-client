@@ -38,7 +38,7 @@ export default function ManageUserPage() {
     const [roleModal, setRoleModal] = useState({ isOpen: false, targetUser: null, newRole: "" });
     const [actionProcessing, setActionProcessing] = useState(false);
 
-    const BASE_URL = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
+    const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
     // Prevent server/client markup hydration mismatch anomalies
     const isMounted = React.useSyncExternalStore(
