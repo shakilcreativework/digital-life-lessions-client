@@ -118,7 +118,7 @@ export default function ManageLessonsPage() {
   // Core Mutation Request Toggles: Content Review Review Verification
   const handleMarkReviewed = async (lessonId) => {
     try {
-      const response = await fetch(`${BASE_URL}/api/admin/lessons/${lessonId}`, {
+      const response = await fetch(`${BASE_URL}/api/admin/lessons/${lessonId}/reviewed`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isReviewed: true, isFlagged: false }) // Resolves flags upon review completion
