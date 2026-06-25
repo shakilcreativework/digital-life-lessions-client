@@ -112,7 +112,7 @@ export default function MyLessonsPage() {
         }
     };
 
-    // Action: Toggle Access Level Attributes (Free/Premium) with Premium User Gate Check
+    // Action: Toggle Access Level Attributes (Free/Premium) with Premium user Gate Check
     const handleToggleAccessLevel = async (lessonId, currentAccess) => {
         if (!session?.user?.isPremium) {
             toast.error("Premium access tier modification requires an active Premium Account.");
