@@ -52,7 +52,7 @@ export default function ManageLessonsPage() {
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, targetLesson: null });
   const [actionProcessing, setActionProcessing] = useState(false);
 
-  const BASE_URL = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
   // Data Fetching Memoized Callback
   const fetchLessonsData = useCallback(async () => {
@@ -214,7 +214,7 @@ export default function ManageLessonsPage() {
   }
 
   return (
-    <main className="w-full min-h-screen bg-background text-foreground px-4 py-8 md:px-8 max-w-7xl mx-auto">
+    <main className="pb-20">
       
       {/* 1. AGGREGATED METRICS STATS HEADER GRID */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
@@ -348,7 +348,7 @@ export default function ManageLessonsPage() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence mode="popLayout">
             {paginatedLessons.map((lesson) => {
               const isItemFlagged = lesson.isFlagged || (lesson.reportsCount > 0);
@@ -373,6 +373,7 @@ export default function ManageLessonsPage() {
                         fill
                         className="object-cover"
                         unoptimized
+                        loading="eager"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-muted">
