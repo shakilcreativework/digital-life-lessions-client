@@ -138,15 +138,19 @@ export default function ManageLessonsPage() {
     if (!deleteModal.targetLesson) return;
     try {
       setActionProcessing(true);
-      const response = await fetch(`${BASE_URL}/api/admin/lessons/${deleteModal.targetLesson._id}`, {
+
+      // FIXED: Updated BASE_URL to use process.env.NEXT_PUBLIC_API_URL explicitly
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/lessons/${deleteModal.targetLesson._id}`, {
         method: "DELETE"
       });
 
-      if (!response.ok) throw new Error("The target entity destruction loop failed on the server.");
+      if (!response.ok) {
+        throw new Error("The target entity destruction loop failed on the server.");
+      }
 
       toast.success("Lesson content data dropped from records successfully.");
       setDeleteModal({ isOpen: false, targetLesson: null });
-      fetchLessonsData();
+      fetchLessonsData(); // Refreshes the admin view roster smoothly
     } catch (error) {
       toast.error(error.message || "Failed to delete target asset registry object.");
     } finally {
@@ -452,8 +456,8 @@ export default function ManageLessonsPage() {
                         <button
                           onClick={() => handleToggleFeatured(lesson._id, lesson.isFeatured)}
                           className={`p-2 rounded-xl border transition-all ${lesson.isFeatured
-                              ? "bg-primary/10 text-primary border-primary/30"
-                              : "bg-surface text-muted border-border hover:text-primary hover:border-primary/40"
+                            ? "bg-primary/10 text-primary border-primary/30"
+                            : "bg-surface text-muted border-border hover:text-primary hover:border-primary/40"
                             }`}
                           title={lesson.isFeatured ? "Demote from Featured Section" : "Make Feature Item"}
                           aria-label="Toggle Featured item status"
