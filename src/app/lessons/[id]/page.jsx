@@ -1,4 +1,4 @@
-// src/app/lessons/[id]/page.jsx
+
 import React from "react";
 import Container from "@/components/shared/Container";
 import { FiAlertCircle, FiArrowLeft } from "react-icons/fi";
@@ -18,7 +18,7 @@ export default async function DynamicLessonPage({ params }) {
 
   try {
     // Fetch data directly from your backend express API server running on port 5000
-    const response = await fetch(`http://localhost:5000/api/lessons/${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${id}`, {
       // Next.js cache control option: 
       // Revalidate page data if it hasn't been requested in the last 60 seconds
       next: { revalidate: 60 }, 
