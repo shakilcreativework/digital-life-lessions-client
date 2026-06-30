@@ -7,8 +7,8 @@ import LessonCard from "../ui/LessonCard";
 import Container from "../shared/Container";
 import EmptyState from "../ui/EmptyState";
 import { useEffect, useState } from "react";
-import { getAllLessons } from "@/lib/actions/lessons";
 import { getAllFeatured } from "@/lib/actions/featured";
+import GlobalLoading from "@/app/loading";
 
 const FeaturedLessons = () => {
     const [features, setFeatured] = useState([]);
@@ -30,9 +30,9 @@ const FeaturedLessons = () => {
     }, []); // Empty array ensures this fires exactly once when the component mounts
 
     console.log(features);
-
-    if (loading) {
-        return <div className="text-center py-10">Loading insights...</div>;
+    
+    if(loading){
+        return GlobalLoading();
     }
 
     return (
@@ -50,13 +50,13 @@ const FeaturedLessons = () => {
                 </div>
 
                 {/* 🎯 Checks data state: if missing, displays the self-contained static UI */}
-                {!features?.data || features?.data.length === 0 ? (
+                {!features || features?.length === 0 ? (
                     <div className="w-full py-12 flex justify-center items-center">
                         <EmptyState />
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 ">
-                        {features?.data.slice(0, 12).map((item) => (
+                        {features?.slice(0, 12).map((item) => (
                             <LessonCard key={item._id} lesson={item} />
                         ))}
                     </div>

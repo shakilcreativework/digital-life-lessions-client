@@ -4,20 +4,17 @@ export const getAllFeatured = async () => {
     try {
         const response = await fetch(`${baseUrl}/api/featured-lessons`, {
             cache: "no-store",
-            headers: {
-                "Content-Type": "application/json"
-            }
+            headers: { "Content-Type": "application/json" }
         });
 
-        if (!response.ok) {
-            throw new Error(`Server Action fetch failed with status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Status: ${response.status}`);
 
-        const featured = await response.json();
-        return featured;
+        const result = await response.json();
+        
+        // Return the 'data' array specifically
+        return result.data || []; 
     } catch (error) {
-        console.error("❌ Failed to resolve featured from Express cluster:", error);
-        // Fallback array prevents map layout crashes in your UI components
+        console.error("❌ Failed to fetch:", error);
         return [];
     }
 };
