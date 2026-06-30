@@ -29,7 +29,7 @@ const FeaturedLessons = () => {
         loadFeatured();
     }, []); // Empty array ensures this fires exactly once when the component mounts
 
-    console.log(features);
+    // console.log(features);
     
     if(loading){
         return GlobalLoading();
